@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 13;
 
 use CSS::Janus;
 
@@ -24,8 +24,20 @@ $testcase = 'background-position: 0 40%';
 $shouldbe = 'background-position: 100% 40%';
 is($self->transform($testcase), $shouldbe);
 
+$testcase = 'background-position: 0px 40%';
+$shouldbe = 'background-position: 100% 40%';
+is($self->transform($testcase), $shouldbe);
+
 $testcase = 'background-position: 0 0';
 $shouldbe = 'background-position: 100% 0';
+is($self->transform($testcase), $shouldbe);
+
+$testcase = 'background-position: 0px 0';
+$shouldbe = 'background-position: 100% 0';
+is($self->transform($testcase), $shouldbe);
+
+$testcase = 'background-position: 0px 0px';
+$shouldbe = 'background-position: 100% 0px';
 is($self->transform($testcase), $shouldbe);
 
 $testcase = 'background-position: 0 auto';
@@ -33,6 +45,10 @@ $shouldbe = 'background-position: 100% auto';
 is($self->transform($testcase), $shouldbe);
 
 $testcase = 'background-position-x: 0';
+$shouldbe = 'background-position-x: 100%';
+is($self->transform($testcase), $shouldbe);
+
+$testcase = 'background-position-x: 0px';
 $shouldbe = 'background-position-x: 100%';
 is($self->transform($testcase), $shouldbe);
 

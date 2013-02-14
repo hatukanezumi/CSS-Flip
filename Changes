@@ -2,6 +2,12 @@
 # Updated entirely to be a bit more Perlish. 
 - lib/CSS/Flip.pod
 + lib/CSS/Janus/Consts.pm
+  - Separate package solely for internal constants.
+! lib/CSS/Janus.pm
+  - Removed "~J~" tokenization.
+  - Added "~X...~" tokenization.
+! t/18bisBGPositionLength.t
+  - Added tests.
 + ToDo
 
 0.01  Wed Feb 13 2013

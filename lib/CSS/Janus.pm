@@ -339,8 +339,8 @@ sub warnForBackgroundPosition {
     my $bad_length  = shift;
     my $whole_value = shift;
 
-    my $msg = sprintf
-	$BACKGROUND_POSITION_ERROR_MESSAGE, $bad_length, $whole_value;
+    my $msg = sprintf $BACKGROUND_POSITION_ERROR_MESSAGE, $bad_length,
+	$whole_value;
     if ($self->{'ignore_bad_bgp'}) {
 	$@ = $msg;
 	carp $msg;
@@ -445,9 +445,13 @@ sub transform {
 	$swap_left_right_in_url = $self->{'swap_left_right_in_url'};
     }
 
-    # Turns the lines into a single line stream.
-    $line =~ s/\r\n|\r|\n/~J~/g;
     my @originals = ();
+
+    # Tokenize tokens tokenizer can be confused.
+    $line =~ s{(~[A-Z_\d]+~)}{
+	push @originals, $1;
+	'~X_' . (scalar @originals) . '~'
+    }eg;
 
     # Tokenize any single line rules with the /* noflip */ annotation.
     $line =~ s{$NOFLIP_SINGLE_RE}{
@@ -514,8 +518,9 @@ sub transform {
     # DeTokenize the comments.
     $line =~ s{~C_(\d+)~}{$originals[$1 - 1]}eg;
 
-    # Rejoin the lines back together.
-    $line =~ s/~J~/\n/g;
+    # Detokenize tokens tokenizer can be confused.
+    $line =~ s{~X_(\d+)~}{$originals[$1 - 1]}eg;
+
     return $line;
 }
 
