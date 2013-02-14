@@ -1,9 +1,9 @@
 --- #YAML:1.0
 name:               CSS-Flip
-version:            0.01
+version:            0.02
 abstract:           Flip direction of Cascading Style Sheet (CSS)
 author:
-    - Hatuka*nezmi - IKEDA Soji <hatuka@nezumi.nu>
+    - Hatuka*nezumi - IKEDA Soji <hatuka@nezumi.nu>
 license:            perl
 distribution_type:  module
 configure_requires:
@@ -11,7 +11,7 @@ configure_requires:
 build_requires:
     ExtUtils::MakeMaker:  0
 requires:
-    Test::More:  0
+    Test::More:  0.45
 no_index:
     directory:
         - t

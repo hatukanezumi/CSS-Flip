@@ -10,7 +10,7 @@ my $self = CSS::Janus->new;
 my $testcase;
 my $shouldbe;
 
-$testcase = ['padding: 1px 2px'];
-$shouldbe = ['padding: 1px 2px'];
-is_deeply($shouldbe, $self->ChangeLeftToRightToLeft($testcase));
+$testcase = 'padding: 1px 2px';
+$shouldbe = 'padding: 1px 2px';
+is($self->transform($testcase), $shouldbe);
 

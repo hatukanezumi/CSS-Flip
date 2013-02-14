@@ -1,0 +1,107 @@
+#-*- perl -*-
+#-*- coding: us-ascii -*-
+
+package CSS::Janus::Consts;
+
+use strict;
+use warnings;
+
+# To be compatible with Perl 5.5 or earlier
+my @OUR_VARS;
+
+BEGIN {
+    @OUR_VARS = qw($NON_ASCII $UNICODE $ESCAPE $NMSTART $URL_SPECIAL_CHARS
+	$UNIT $NMCHAR $IDENT $NAME $HASH $NUM $URL_CHARS $COMMENT $QUANTITY
+	$LOOKBEHIND_NOT_LETTER $LOOKAHEAD_NOT_OPEN_BRACE
+	$VALID_AFTER_URI_CHARS $LOOKAHEAD_NOT_CLOSING_PAREN
+	$LOOKAHEAD_FOR_CLOSING_PAREN $POSSIBLY_NEGATIVE_QUANTITY
+	$FOUR_NOTATION_QUANTITY_RE $COLOR $FOUR_NOTATION_COLOR_RE
+	$BORDER_RADIUS_RE $CURSOR_EAST_RE $CURSOR_WEST_RE
+	$BG_HORIZONTAL_PERCENTAGE_RE $BG_HORIZONTAL_PERCENTAGE_X_RE
+	$LENGTH_UNIT $LOOKAHEAD_END_OF_ZERO $LENGTH $ZERO_LENGTH
+	$BG_HORIZONTAL_LENGTH_RE $BG_HORIZONTAL_LENGTH_X_RE
+	$CHARS_WITHIN_SELECTOR $BODY_DIRECTION_LTR_RE $BODY_DIRECTION_RTL_RE
+	$LEFT_RE $RIGHT_RE $LEFT_IN_URL_RE $RIGHT_IN_URL_RE
+	$LTR_IN_URL_RE $RTL_IN_URL_RE
+	$COMMENT_RE $NOFLIP_SINGLE_RE $NOFLIP_CLASS_RE
+	$BORDER_RADIUS_TOKENIZER_RE);
+}
+use vars qw(@ISA @EXPORT), @OUR_VARS;
+use Exporter;
+@ISA    = qw(Exporter);
+@EXPORT = @OUR_VARS;
+
+## Constants
+
+$NON_ASCII         = '[\200-\377]';
+$UNICODE           = "(?:(?:\\\\[0-9a-f]{1,6})(?:\\r\\n|[ \\t\\r\\n\\f])?)";
+$ESCAPE            = "(?:$UNICODE|\\\\[^\\r\\n\\f0-9a-f])";
+$NMSTART           = "(?:[_a-z]|$NON_ASCII|$ESCAPE)";
+$URL_SPECIAL_CHARS = '[!#$%&*-~]';
+$UNIT              = '(?:em|ex|px|cm|mm|in|pt|pc|deg|rad|grad|ms|s|hz|khz|%)';
+
+$NMCHAR    = "(?:[_a-z0-9-]|$NON_ASCII|$ESCAPE)";
+$IDENT     = "-?$NMSTART$NMCHAR*";
+$NAME      = "$NMCHAR+";
+$HASH      = "#$NAME";
+$NUM       = '(?:[0-9]*\.[0-9]+|[0-9]+)';
+$URL_CHARS = "(?:$URL_SPECIAL_CHARS|$NON_ASCII|$ESCAPE)*";
+$COMMENT   = '/\*[^*]*\*+([^/*][^*]*\*+)*/';
+$QUANTITY  = "$NUM(?:\\s*$UNIT|$IDENT)?";
+
+$LOOKBEHIND_NOT_LETTER = '(?<![a-zA-Z])';
+$LOOKAHEAD_NOT_OPEN_BRACE =
+    "(?!(?:$NMCHAR|~J~|\\s|#|\\:|\\.|\\,|\\+|>)*?\\{)";
+$VALID_AFTER_URI_CHARS       = '[\'\"]?\s*';
+$LOOKAHEAD_NOT_CLOSING_PAREN = "(?!$URL_CHARS?$VALID_AFTER_URI_CHARS\\))";
+$LOOKAHEAD_FOR_CLOSING_PAREN = "(?=$URL_CHARS?$VALID_AFTER_URI_CHARS\\))";
+
+$POSSIBLY_NEGATIVE_QUANTITY = "((?:-?$QUANTITY)|(?:inherit|auto))";
+$FOUR_NOTATION_QUANTITY_RE =
+    qr<$POSSIBLY_NEGATIVE_QUANTITY\s+$POSSIBLY_NEGATIVE_QUANTITY\s+$POSSIBLY_NEGATIVE_QUANTITY\s+$POSSIBLY_NEGATIVE_QUANTITY>i;
+$COLOR = "($NAME|$HASH)";
+$FOUR_NOTATION_COLOR_RE =
+    qr<(-color\s*:\s*)$COLOR\s$COLOR\s$COLOR\s($COLOR)>i;
+
+$BORDER_RADIUS_RE =
+    qr<((?:$IDENT)?)border-radius(\s*:\s*)(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY)(?:\s*/\s*(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY))?>i;
+
+# Compile the cursor resize regexes
+$CURSOR_EAST_RE = qr<$LOOKBEHIND_NOT_LETTER([ns]?)e-resize>;
+$CURSOR_WEST_RE = qr<$LOOKBEHIND_NOT_LETTER([ns]?)w-resize>;
+
+$BG_HORIZONTAL_PERCENTAGE_RE =
+    qr<background(-position)?(\s*:\s*)([^%]*?)($NUM)%(\s*(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
+$BG_HORIZONTAL_PERCENTAGE_X_RE = qr<background-position-x(\s*:\s*)($NUM)%>;
+
+$LENGTH_UNIT           = '(?:em|ex|px|cm|mm|in|pt|pc)';
+$LOOKAHEAD_END_OF_ZERO = '(?![0-9]|\s*%)';
+$LENGTH      = "(?:-?$NUM(?:\\s*$LENGTH_UNIT)|0+$LOOKAHEAD_END_OF_ZERO)";
+$ZERO_LENGTH = "(?:-?0+(?:\\s*$LENGTH_UNIT)|0+$LOOKAHEAD_END_OF_ZERO)\$";
+$BG_HORIZONTAL_LENGTH_RE = qr<background(-position)?(\s*:\s*)((?:.+?\s+)??)($LENGTH)((?:\s+)(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
+$BG_HORIZONTAL_LENGTH_X_RE = qr<background-position-x(\s*:\s*)($LENGTH)>;
+
+$CHARS_WITHIN_SELECTOR = '[^\}]*?';
+$BODY_DIRECTION_LTR_RE =
+    qr<(body\s*{\s*)($CHARS_WITHIN_SELECTOR)(direction\s*:\s*)(ltr)>i;
+$BODY_DIRECTION_RTL_RE =
+    qr<(body\s*{\s*)($CHARS_WITHIN_SELECTOR)(direction\s*:\s*)(rtl)>i;
+
+$LEFT_RE =
+    qr<$LOOKBEHIND_NOT_LETTER((?:top|bottom)?)(left)$LOOKAHEAD_NOT_CLOSING_PAREN$LOOKAHEAD_NOT_OPEN_BRACE>i;
+$RIGHT_RE =
+    qr<$LOOKBEHIND_NOT_LETTER((?:top|bottom)?)(right)$LOOKAHEAD_NOT_CLOSING_PAREN$LOOKAHEAD_NOT_OPEN_BRACE>i;
+$LEFT_IN_URL_RE =
+    qr<$LOOKBEHIND_NOT_LETTER(left)$LOOKAHEAD_FOR_CLOSING_PAREN>i;
+$RIGHT_IN_URL_RE =
+    qr<$LOOKBEHIND_NOT_LETTER(right)$LOOKAHEAD_FOR_CLOSING_PAREN>i;
+$LTR_IN_URL_RE = qr<$LOOKBEHIND_NOT_LETTER(ltr)$LOOKAHEAD_FOR_CLOSING_PAREN>i;
+$RTL_IN_URL_RE = qr<$LOOKBEHIND_NOT_LETTER(rtl)$LOOKAHEAD_FOR_CLOSING_PAREN>i;
+
+$COMMENT_RE = qr<($COMMENT)>i;
+$NOFLIP_SINGLE_RE =
+    qr<(/\*\s*\@noflip\s*\*/$LOOKAHEAD_NOT_OPEN_BRACE[^;}]+;?)>i;
+$NOFLIP_CLASS_RE = qr<(/\*\s*\@noflip\s*\*/$CHARS_WITHIN_SELECTOR})>i;
+$BORDER_RADIUS_TOKENIZER_RE = qr<((?:$IDENT)?border-radius\s*:[^;}]+;?)>i;
+
+1;

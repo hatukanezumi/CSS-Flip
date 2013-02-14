@@ -10,11 +10,11 @@ my $self = CSS::Janus->new;
 my $testcase;
 my $shouldbe;
 
-$testcase = ['float: right'];
-$shouldbe = ['float: left'];
-is_deeply($shouldbe, $self->ChangeLeftToRightToLeft($testcase));
+$testcase = 'float: right';
+$shouldbe = 'float: left';
+is($self->transform($testcase), $shouldbe);
 
-$testcase = ['float: left'];
-$shouldbe = ['float: right'];
-is_deeply($shouldbe, $self->ChangeLeftToRightToLeft($testcase));
+$testcase = 'float: left';
+$shouldbe = 'float: right';
+is($self->transform($testcase), $shouldbe);
 

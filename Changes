@@ -1,3 +1,9 @@
+0.02  Xxx Xxx XX 2013
+# Updated entirely to be a bit more Perlish. 
+- lib/CSS/Flip.pod
++ lib/CSS/Janus/Consts.pm
++ ToDo
+
 0.01  Wed Feb 13 2013
 # Initial chkckin
 

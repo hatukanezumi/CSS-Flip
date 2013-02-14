@@ -1,17 +1,15 @@
-NAME
-    CSS::Flip - Flip direction of Cascading Style Sheet (CSS)
+CSS-Flip Package.
 
-SYNOPSIS AND DESCRIPTION
-    See cssflip and CSS::Janus.
+Copyright (C) 2013 by Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>.
 
-VERSION
-    0.01
+This package is free software; you can redistribute it and/or modify it 
+under the same terms as Perl itself.
 
-AUTHOR
-    Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>
+                                   ***
 
-COPYRIGHT
-    Copyright (C) 2013 Hatuka*nezumi - IKEDA Soji. This program is free
-    software; you can redistribute it and/or modify it under the same terms
-    as Perl itself.
+One main module and one utility program file are contained. For more details
+read following POD documentation:
 
+    CSS::Janus - Converts a left-to-right Cascading Style Sheet (CSS) into a right-to-left one
+
+$$

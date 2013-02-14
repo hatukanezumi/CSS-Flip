@@ -11,8 +11,8 @@ my $testcase;
 my $shouldbe;
 
 $testcase =
-    ['body{direction:rtl;float:right}' . '.b2{direction:ltr;float:right}'];
+    'body{direction:rtl;float:right}' . '.b2{direction:ltr;float:right}';
 $shouldbe =
-    ['body{direction:ltr;float:left}' . '.b2{direction:ltr;float:left}'];
-is_deeply($shouldbe, $self->ChangeLeftToRightToLeft($testcase));
+    'body{direction:ltr;float:left}' . '.b2{direction:ltr;float:left}';
+is($self->transform($testcase), $shouldbe);
 
