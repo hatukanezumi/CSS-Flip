@@ -27,7 +27,7 @@
       },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "0"
+            "ExtUtils::MakeMaker" : "6.46"
          }
       },
       "runtime" : {
@@ -37,5 +37,13 @@
       }
    },
    "release_status" : "stable",
+   "resources" : {
+      "license" : [
+         "http://dev.perl.org/licenses/"
+      ],
+      "repository" : {
+         "url" : "http://repos.nezumi.nu/repos/CSS-Flip/"
+      }
+   },
    "version" : "0.02"
 }

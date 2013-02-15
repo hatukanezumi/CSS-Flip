@@ -1,8 +1,8 @@
-0.02  Xxx Xxx XX 2013
+0.02  Fri Feb 15 2013
 # Updated entirely to be a bit more Perlish. 
 - lib/CSS/Flip.pod
 + lib/CSS/Janus/Consts.pm
-  - Separate package solely for internal constants.
+  - Separate package for solely internal constants.
 ! lib/CSS/Janus.pm
   - Removed "~J~" tokenization.
   - Added "~X...~" tokenization.

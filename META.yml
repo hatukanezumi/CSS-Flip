@@ -7,11 +7,14 @@ author:
 license:            perl
 distribution_type:  module
 configure_requires:
-    ExtUtils::MakeMaker:  0
+    ExtUtils::MakeMaker:  6.46
 build_requires:
     ExtUtils::MakeMaker:  0
 requires:
     Test::More:  0.45
+resources:
+    license:     http://dev.perl.org/licenses/
+    repository:  http://repos.nezumi.nu/repos/CSS-Flip/
 no_index:
     directory:
         - t

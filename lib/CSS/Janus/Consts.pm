@@ -1,6 +1,8 @@
 #-*- perl -*-
 #-*- coding: us-ascii -*-
 
+use 5.004;
+
 package CSS::Janus::Consts;
 
 use strict;
@@ -33,21 +35,46 @@ use Exporter;
 
 ## Constants
 
-$NON_ASCII         = '[\200-\377]';
-$UNICODE           = "(?:(?:\\\\[0-9a-f]{1,6})(?:\\r\\n|[ \\t\\r\\n\\f])?)";
-$ESCAPE            = "(?:$UNICODE|\\\\[^\\r\\n\\f0-9a-f])";
-$NMSTART           = "(?:[_a-z]|$NON_ASCII|$ESCAPE)";
-$URL_SPECIAL_CHARS = '[!#$%&*-~]';
-$UNIT              = '(?:em|ex|px|cm|mm|in|pt|pc|deg|rad|grad|ms|s|hz|khz|%)';
+# These are part of grammer taken from http://www.w3.org/TR/CSS21/grammar.html
 
-$NMCHAR    = "(?:[_a-z0-9-]|$NON_ASCII|$ESCAPE)";
-$IDENT     = "-?$NMSTART$NMCHAR*";
-$NAME      = "$NMCHAR+";
-$HASH      = "#$NAME";
-$NUM       = '(?:[0-9]*\.[0-9]+|[0-9]+)';
-$URL_CHARS = "(?:$URL_SPECIAL_CHARS|$NON_ASCII|$ESCAPE)*";
-$COMMENT   = '/\*[^*]*\*+([^/*][^*]*\*+)*/';
-$QUANTITY  = "$NUM(?:\\s*$UNIT|$IDENT)?";
+# nonascii      [\240-\377]
+$NON_ASCII = '[\200-\377]';
+
+# unicode       \\{h}{1,6}(\r\n|[ \t\r\n\f])?
+$UNICODE = "(?:(?:\\\\[0-9a-f]{1,6})(?:\\r\\n|[ \\t\\r\\n\\f])?)";
+
+# escape        {unicode}|\\[^\r\n\f0-9a-f]
+$ESCAPE = "(?:$UNICODE|\\\\[^\\r\\n\\f0-9a-f])";
+
+# nmstart       [_a-z]|{nonascii}|{escape}
+$NMSTART = "(?:[_a-z]|$NON_ASCII|$ESCAPE)";
+
+# nmchar        [_a-z0-9-]|{nonascii}|{escape}
+$NMCHAR = "(?:[_a-z0-9-]|$NON_ASCII|$ESCAPE)";
+
+# comment       \/\*[^*]*\*+([^/*][^*]*\*+)*\/
+$COMMENT = '/\*[^*]*\*+([^/*][^*]*\*+)*/';
+
+# ident         -?{nmstart}{nmchar}*
+$IDENT = "-?$NMSTART$NMCHAR*";
+
+# name          {nmchar}+
+$NAME = "$NMCHAR+";
+
+# num           [0-9]+|[0-9]*"."[0-9]+
+$NUM = '(?:[0-9]*\.[0-9]+|[0-9]+)';
+
+# url           ([!#$%&*-~]|{nonascii}|{escape})*
+$URL_SPECIAL_CHARS = '[!#$%&*-~]';
+$URL_CHARS         = "(?:$URL_SPECIAL_CHARS|$NON_ASCII|$ESCAPE)*";
+
+# "#"{name}     {return HASH;}
+$HASH = "#$NAME";
+
+# These are regexps particular to this package.
+
+$UNIT     = '(?:em|ex|px|cm|mm|in|pt|pc|deg|rad|grad|ms|s|hz|khz|%)';
+$QUANTITY = "$NUM(?:\\s*$UNIT|$IDENT)?";
 
 $LOOKBEHIND_NOT_LETTER = '(?<![a-zA-Z])';
 $LOOKAHEAD_NOT_OPEN_BRACE =
@@ -66,7 +93,6 @@ $FOUR_NOTATION_COLOR_RE =
 $BORDER_RADIUS_RE =
     qr<((?:$IDENT)?)border-radius(\s*:\s*)(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY)(?:\s*/\s*(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY))?>i;
 
-# Compile the cursor resize regexes
 $CURSOR_EAST_RE = qr<$LOOKBEHIND_NOT_LETTER([ns]?)e-resize>;
 $CURSOR_WEST_RE = qr<$LOOKBEHIND_NOT_LETTER([ns]?)w-resize>;
 
@@ -78,7 +104,8 @@ $LENGTH_UNIT           = '(?:em|ex|px|cm|mm|in|pt|pc)';
 $LOOKAHEAD_END_OF_ZERO = '(?![0-9]|\s*%)';
 $LENGTH      = "(?:-?$NUM(?:\\s*$LENGTH_UNIT)|0+$LOOKAHEAD_END_OF_ZERO)";
 $ZERO_LENGTH = "(?:-?0+(?:\\s*$LENGTH_UNIT)|0+$LOOKAHEAD_END_OF_ZERO)\$";
-$BG_HORIZONTAL_LENGTH_RE = qr<background(-position)?(\s*:\s*)((?:.+?\s+)??)($LENGTH)((?:\s+)(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
+$BG_HORIZONTAL_LENGTH_RE =
+    qr<background(-position)?(\s*:\s*)((?:.+?\s+)??)($LENGTH)((?:\s+)(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
 $BG_HORIZONTAL_LENGTH_X_RE = qr<background-position-x(\s*:\s*)($LENGTH)>;
 
 $CHARS_WITHIN_SELECTOR = '[^\}]*?';
