@@ -1,7 +1,7 @@
 #!perl
 
 use strict;
-use warnings;
+#use warnings;
 use Carp qw(croak);
 use Getopt::Long;
 use CSS::Janus;
@@ -11,14 +11,13 @@ my $swap_left_right_in_url;
 my $ignore_bad_bgp;
 
 use vars qw($VERSION);
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 unless (
     GetOptions 'h|help' => sub {
-	my $pipe;
-	open $pipe, '|-', 'pod2text' or exit $!;
-	print $pipe join '', <DATA>;
-	close $pipe;
+	open PIPE, '|pod2text' or exit $!;
+	print PIPE join '', <DATA>;
+	close PIPE;
 	exit;
     },
     'version' => sub {
@@ -31,10 +30,9 @@ unless (
     'swap_left_right_in_url' => \$swap_left_right_in_url,
     'ignore_bad_bgp'         => \$ignore_bad_bgp,
     ) {
-    my $pipe;
-    open $pipe, '|-', 'pod2text' or croak $!;
-    print $pipe join '', <DATA>;
-    close $pipe;
+    open PIPE, '|pod2text' or croak $!;
+    print PIPE join '', <DATA>;
+    close PIPE;
     exit 2;
 }
 

@@ -14,7 +14,7 @@ sub postamble {
 WriteMakefile(
     'NAME'      => 'CSS::Flip',
     'ABSTRACT'  => 'Flip direction of Cascading Style Sheet (CSS)',
-    'VERSION'   => '0.02',
+    'VERSION'   => '0.03',
     'AUTHOR'    => ['Hatuka*nezumi - IKEDA Soji <hatuka@nezumi.nu>'],
     'LICENSE'   => 'perl',
     'CONFIGURE_REQUIRES' => {

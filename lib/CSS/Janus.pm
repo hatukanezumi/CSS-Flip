@@ -27,17 +27,17 @@ This module is a Perl port of CSSJanus by Lindsey Simon <elsigh@google.com>.
 
 =cut
 
-use 5.004;
+use 5.005;
 
 package CSS::Janus;
 
 use strict;
-use warnings;
+#use warnings;
 use Carp qw(carp confess croak);
 
 # To be compatible with Perl 5.5 or earlier
 use vars qw($VERSION $BASE_REVISION);
-$VERSION       = '0.02';
+$VERSION       = '0.03';
 $BASE_REVISION = 'http://cssjanus.googlecode.com/svn/trunk@31';
 
 use CSS::Janus::Consts;
@@ -206,7 +206,7 @@ sub fixBorderRadius {
     my $line = shift;
 
     $line =~ s{$BORDER_RADIUS_RE}{
-	reorderBorderRadius($&, $1, $2, $3, $4, $5, $6, $7, $8)
+	reorderBorderRadius($&, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     }eg;
 
     return $line;
@@ -283,7 +283,7 @@ sub reorderBorderRadius {
     my @m = @_;
 
     my $first_group  = reorderBorderRadiusPart(@m[3 .. 6]);
-    my $second_group = reorderBorderRadiusPart(@m[7 .. $#_]);
+    my $second_group = reorderBorderRadiusPart(@m[7 .. $#m]);
     if ($second_group eq '') {
 	return sprintf '%sborder-radius%s%s', $_[1], $_[2], $first_group;
     } else {

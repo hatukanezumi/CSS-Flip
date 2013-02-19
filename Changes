@@ -1,3 +1,11 @@
++0.03  Tue Feb 19 2013
+! bin/cssflip
+  - Fix: not use 3-args open() to support Perl < 5.6.
+! lib/CSS/Janus.pm
+  - Bug fix: failed on border-radius with 7 or 8 parts.
+  - Supports Perl >= 5.005.
++ t/22bisBorderRadiusNotation.t
+
 0.02  Fri Feb 15 2013
 # Updated entirely to be a bit more Perlish. 
 - lib/CSS/Flip.pod

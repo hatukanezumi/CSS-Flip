@@ -1,7 +1,7 @@
 #-*- perl -*-
 
 use strict;
-use warnings;
+#use warnings;
 use Test::More tests => 7;
 
 use CSS::Janus;

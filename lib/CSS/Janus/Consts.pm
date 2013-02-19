@@ -6,7 +6,7 @@ use 5.004;
 package CSS::Janus::Consts;
 
 use strict;
-use warnings;
+#use warnings;
 
 # To be compatible with Perl 5.5 or earlier
 my @OUR_VARS;

@@ -30,6 +30,7 @@ t/19DirectionalClassnames.t
 t/20LongLineWithMultipleDefs.t
 t/21NoFlip.t
 t/22BorderRadiusNotation.t
+t/22bisBorderRadiusNotation.t
 t/23GradientNotation.t
 t/pod.t
 TODO
