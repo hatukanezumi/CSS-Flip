@@ -1,4 +1,4 @@
-+0.03  Tue Feb 19 2013
+0.03  Tue Feb 19 2013
 ! bin/cssflip
   - Fix: not use 3-args open() to support Perl < 5.6.
 ! lib/CSS/Janus.pm
