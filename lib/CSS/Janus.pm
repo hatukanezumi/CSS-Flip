@@ -507,6 +507,7 @@ sub transform {
 
     $line = $self->fixBackgroundPosition($line);
 
+    # DeTokenize gradients
     $line =~ s{~GRADIENT_(\d+)~}{$originals[$1 - 1]}eg;
 
     # DeTokenize the single line noflips.

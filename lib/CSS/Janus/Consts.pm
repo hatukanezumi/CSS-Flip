@@ -13,8 +13,9 @@ my @OUR_VARS;
 
 BEGIN {
     @OUR_VARS = qw($NON_ASCII $UNICODE $ESCAPE $NMSTART $URL_SPECIAL_CHARS
-	$UNIT $NMCHAR $IDENT $NAME $HASH $NUM $URL_CHARS $COMMENT $QUANTITY
-	$LOOKBEHIND_NOT_LETTER $LOOKAHEAD_NOT_OPEN_BRACE
+	$NMCHAR $STRING1 $STRING2 $COMMENT $IDENT $NAME $NUM $STRING
+	$URL_CHARS $HASH $URI
+	$UNIT $QUANTITY $LOOKBEHIND_NOT_LETTER $LOOKAHEAD_NOT_OPEN_BRACE
 	$VALID_AFTER_URI_CHARS $LOOKAHEAD_NOT_CLOSING_PAREN
 	$LOOKAHEAD_FOR_CLOSING_PAREN $POSSIBLY_NEGATIVE_QUANTITY
 	$FOUR_NOTATION_QUANTITY_RE $COLOR $FOUR_NOTATION_COLOR_RE
@@ -54,6 +55,12 @@ $NMSTART = "(?:[_a-z]|$NON_ASCII|$ESCAPE)";
 # nmchar        [_a-z0-9-]|{nonascii}|{escape}
 $NMCHAR = "(?:[_a-z0-9-]|$NON_ASCII|$ESCAPE)";
 
+# string1       \"([^\n\r\f\\"]|\\{nl}|{escape})*\"
+$STRING1 = "\"(?:[^\"\\\\]|\\.)*\"";
+
+# string2       \'([^\n\r\f\\']|\\{nl}|{escape})*\'
+$STRING2 = "\'(?:[^\'\\\\]|\\.)*\'";
+
 # comment       \/\*[^*]*\*+([^/*][^*]*\*+)*\/
 $COMMENT = '/\*[^*]*\*+([^/*][^*]*\*+)*/';
 
@@ -66,12 +73,19 @@ $NAME = "$NMCHAR+";
 # num           [0-9]+|[0-9]*"."[0-9]+
 $NUM = '(?:[0-9]*\.[0-9]+|[0-9]+)';
 
+# string        {string1}|{string2}
+$STRING = "(?:$STRING1|$STRING2)";
+
 # url           ([!#$%&*-~]|{nonascii}|{escape})*
 $URL_SPECIAL_CHARS = '[!#$%&*-~]';
 $URL_CHARS         = "(?:$URL_SPECIAL_CHARS|$NON_ASCII|$ESCAPE)*";
 
 # "#"{name}     {return HASH;}
 $HASH = "#$NAME";
+
+# "url("{w}{string}{w}")" {return URI;}
+# "url("{w}{url}{w}")"    {return URI;}
+$URI = "url\\(\\s*(?:$STRING|$URL_CHARS)\\s*\\)";
 
 # These are regexps particular to this package.
 
@@ -88,7 +102,11 @@ $LOOKAHEAD_FOR_CLOSING_PAREN = "(?=$URL_CHARS?$VALID_AFTER_URI_CHARS\\))";
 $POSSIBLY_NEGATIVE_QUANTITY = "((?:-?$QUANTITY)|(?:inherit|auto))";
 $FOUR_NOTATION_QUANTITY_RE =
     qr<$POSSIBLY_NEGATIVE_QUANTITY\s+$POSSIBLY_NEGATIVE_QUANTITY\s+$POSSIBLY_NEGATIVE_QUANTITY\s+$POSSIBLY_NEGATIVE_QUANTITY>i;
-$COLOR = "($NAME|$HASH)";
+
+# $COLOR = "($NAME|$HASH);
+# modified: added "rgb(...)".
+my $COLOR_SCHEME = '(?:rgb|rgba|hsl|hsla)';
+$COLOR = "($COLOR_SCHEME\\([^\)]+\\)|$NAME|$HASH)";
 $FOUR_NOTATION_COLOR_RE =
     qr<(-color\s*:\s*)$COLOR\s$COLOR\s$COLOR\s($COLOR)>i;
 
@@ -98,16 +116,27 @@ $BORDER_RADIUS_RE =
 $CURSOR_EAST_RE = qr<$LOOKBEHIND_NOT_LETTER([ns]?)e-resize>;
 $CURSOR_WEST_RE = qr<$LOOKBEHIND_NOT_LETTER([ns]?)w-resize>;
 
+# Term of background property.  Gradirents may not be included because they
+# will have been tokenized.
+my $BG_TERM = "(?:$URI|$STRING|$COLOR_SCHEME\\([^\)]+\\)|[^\\s;\}]+)";
+
+#$BG_HORIZONTAL_PERCENTAGE_RE =
+#    qr<background(-position)?(\s*:\s*)([^%]*?)($NUM)%(\s*(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
+# modified: fixed cssjanus Issue #20.
 $BG_HORIZONTAL_PERCENTAGE_RE =
-    qr<background(-position)?(\s*:\s*)([^%]*?)($NUM)%(\s*(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
+    qr<background(-position)?(\s*:\s*)((?:$BG_TERM\s+)*?)($NUM)%(\s*(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
 $BG_HORIZONTAL_PERCENTAGE_X_RE = qr<background-position-x(\s*:\s*)($NUM)%>;
 
 $LENGTH_UNIT           = '(?:em|ex|px|cm|mm|in|pt|pc)';
 $LOOKAHEAD_END_OF_ZERO = '(?![0-9]|\s*%)';
 $LENGTH      = "(?:-?$NUM(?:\\s*$LENGTH_UNIT)|0+$LOOKAHEAD_END_OF_ZERO)";
 $ZERO_LENGTH = "(?:-?0+(?:\\s*$LENGTH_UNIT)|0+$LOOKAHEAD_END_OF_ZERO)\$";
+
+# $BG_HORIZONTAL_LENGTH_RE =
+#    qr<background(-position)?(\s*:\s*)((?:.+?\s+)??)($LENGTH)((?:\s+)(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
+# modified: fixed cssjanus Issue #20.
 $BG_HORIZONTAL_LENGTH_RE =
-    qr<background(-position)?(\s*:\s*)((?:.+?\s+)??)($LENGTH)((?:\s+)(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
+    qr<background(-position)?(\s*:\s*)((?:$BG_TERM\s+)*?)($LENGTH)((?:\s+)(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
 $BG_HORIZONTAL_LENGTH_X_RE = qr<background-position-x(\s*:\s*)($LENGTH)>;
 
 $CHARS_WITHIN_SELECTOR = '[^\}]*?';

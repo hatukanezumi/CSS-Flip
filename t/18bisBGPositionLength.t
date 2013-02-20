@@ -2,7 +2,7 @@
 
 use strict;
 #use warnings;
-use Test::More tests => 13;
+use Test::More tests => 15;
 
 use CSS::Janus;
 
@@ -66,5 +66,15 @@ is($self->transform($testcase), $shouldbe);
 
 $testcase = '.test { background: 0 20% } .test2 { background: 0 30% }';
 $shouldbe = '.test { background: 100% 20% } .test2 { background: 100% 30% }';
+is($self->transform($testcase), $shouldbe);
+
+# cssjanus Issue #20
+
+$testcase = 'div {background: none; padding: 1em 0;}';
+$shouldbe = 'div {background: none; padding: 1em 0;}';
+is($self->transform($testcase), $shouldbe);
+
+$testcase = 'div {background: none; padding: 10% 0;}';
+$shouldbe = 'div {background: none; padding: 10% 0;}';
 is($self->transform($testcase), $shouldbe);
 
