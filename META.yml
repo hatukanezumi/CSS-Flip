@@ -7,7 +7,7 @@ author:
 license:            perl
 distribution_type:  module
 configure_requires:
-    ExtUtils::MakeMaker:  6.46
+    ExtUtils::MakeMaker:  6.26
 build_requires:
     ExtUtils::MakeMaker:  0
 requires:

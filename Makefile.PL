@@ -4,6 +4,10 @@ use ExtUtils::MakeMaker;
 # For EU::MM < 6.58
 sub postamble {
     my $self = shift;
+
+    return "preop :\n\n"
+	unless $self->can('cd'); # Earlier EU::MM don't have it.
+
     my $make_json = $self->cd(
 	q{$(DISTVNAME)},
 	q{$(FULLPERL) -MCPAN::Meta -MCPAN::Meta::Converter -e 'CPAN::Meta->new(CPAN::Meta::Converter->new(CPAN::Meta->load_file("META.yml"))->convert(version=>"2"))->save("META.json")'}
@@ -18,7 +22,7 @@ WriteMakefile(
     'AUTHOR'    => ['Hatuka*nezumi - IKEDA Soji <hatuka@nezumi.nu>'],
     'LICENSE'   => 'perl',
     'CONFIGURE_REQUIRES' => {
-	'ExtUtils::MakeMaker' => '6.46',
+	'ExtUtils::MakeMaker' => '6.26',
     },
     'PREREQ_PM' => {
 	'Test::More'          => '0.45',

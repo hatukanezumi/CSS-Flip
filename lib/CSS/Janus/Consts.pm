@@ -38,7 +38,9 @@ use Exporter;
 # These are part of grammer taken from http://www.w3.org/TR/CSS21/grammar.html
 
 # nonascii      [\240-\377]
-$NON_ASCII = '[\200-\377]';
+# $NON_ASCII = '[\200-\377]';
+# modified: handle characters beyond \377.
+$NON_ASCII = "[^\\000-\\177]";
 
 # unicode       \\{h}{1,6}(\r\n|[ \t\r\n\f])?
 $UNICODE = "(?:(?:\\\\[0-9a-f]{1,6})(?:\\r\\n|[ \\t\\r\\n\\f])?)";
