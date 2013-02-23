@@ -32,7 +32,8 @@
       },
       "runtime" : {
          "requires" : {
-            "Test::More" : "0.45"
+            "Test::More" : "0.45",
+            "perl" : "5.005"
          }
       }
    },
@@ -45,5 +46,5 @@
          "url" : "http://repos.nezumi.nu/repos/CSS-Flip/"
       }
    },
-   "version" : "0.03"
+   "version" : "0.04"
 }

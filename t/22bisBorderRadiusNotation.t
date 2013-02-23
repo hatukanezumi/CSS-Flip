@@ -11,27 +11,24 @@ my $testcase;
 my $shouldbe;
 my @args;
 
-
-@args = qw(1px 2px 3px 4px);
+@args     = qw(1px 2px 3px 4px);
 $shouldbe = '2px 1px 4px 3px';
 is(CSS::Janus::reorderBorderRadiusPart(@args), $shouldbe);
 
-
-@args = qw(1px 2px 3px);
+@args     = qw(1px 2px 3px);
 $shouldbe = '2px 1px 2px 3px';
 is(CSS::Janus::reorderBorderRadiusPart(@args), $shouldbe);
 
-@args = qw(1px 2px);
+@args     = qw(1px 2px);
 $shouldbe = '2px 1px';
 is(CSS::Janus::reorderBorderRadiusPart(@args), $shouldbe);
 
-@args = qw(1px);
+@args     = qw(1px);
 $shouldbe = '1px';
 is(CSS::Janus::reorderBorderRadiusPart(@args), $shouldbe);
 
-@args = (
-    'X', '', ': ', '1px', '2px', '3px', '4px', '5px', '6px', undef, '7px'
-);
+@args =
+    ('X', '', ': ', '1px', '2px', '3px', '4px', '5px', '6px', undef, '7px');
 $shouldbe = 'border-radius: 2px 1px 4px 3px / 6px 5px 6px 7px';
 is(CSS::Janus::reorderBorderRadius(@args), $shouldbe);
 

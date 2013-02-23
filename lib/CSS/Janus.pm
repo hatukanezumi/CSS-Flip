@@ -27,20 +27,19 @@ This module is a Perl port of CSSJanus by Lindsey Simon <elsigh@google.com>.
 
 =cut
 
-use 5.005;
+use 5.005; # qr{} and $10 are required.
 
 package CSS::Janus;
 
 use strict;
 #use warnings;
-use Carp qw(carp confess croak);
-
-# To be compatible with Perl 5.5 or earlier
-use vars qw($VERSION $BASE_REVISION);
-$VERSION       = '0.03';
-$BASE_REVISION = 'http://cssjanus.googlecode.com/svn/trunk@31';
-
+use Carp qw(carp croak);
 use CSS::Janus::Consts;
+
+# To be compatible with Perl 5.5.
+use vars qw($VERSION $BASE_REVISION);
+$VERSION       = '0.04';
+$BASE_REVISION = 'http://cssjanus.googlecode.com/svn/trunk@31';
 
 =head2 Constructor
 
@@ -91,19 +90,17 @@ sub substituteGradient {
 
     pos($input_string) = 0;
     my $output = '';
+    my ($other, $match, $paren_count);
 
     while ($input_string =~ m{\G(.*?)($GRADIENT_RE)}cg) {
-	my $other = $1;
-	my $match = $2;
+	($other, $match) = ($1, $2);
 
-	my $paren_count = 1;
-	while ($paren_count) {
-	    if ($input_string =~ m{\G(\()}cg) {
+	$paren_count = 1;
+	while ($paren_count and $input_string =~ m{\G(\(|\)|[^()]+)}cg) {
+	    if ($1 eq '(') {
 		$paren_count++;
-	    } elsif ($input_string =~ m{\G(\))}cg) {
+	    } elsif ($1 eq ')') {
 		$paren_count--;
-	    } elsif ($input_string !~ m{\G([^()]+)}cg) {
-		last;
 	    }
 	    $match .= $1;
 	}
@@ -345,7 +342,7 @@ sub warnForBackgroundPosition {
 	$@ = $msg;
 	carp $msg;
     } else {
-	confess $msg;
+	croak $msg;
     }
 }
 

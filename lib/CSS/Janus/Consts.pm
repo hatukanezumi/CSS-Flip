@@ -1,7 +1,7 @@
 #-*- perl -*-
 #-*- coding: us-ascii -*-
 
-use 5.004;
+use 5.005;    # qr{} is required.
 
 package CSS::Janus::Consts;
 
@@ -29,10 +29,11 @@ BEGIN {
 	$COMMENT_RE $NOFLIP_SINGLE_RE $NOFLIP_CLASS_RE
 	$BORDER_RADIUS_TOKENIZER_RE);
 }
-use vars qw(@ISA @EXPORT), @OUR_VARS;
+use vars qw(@ISA @EXPORT $VERSION), @OUR_VARS;
 use Exporter;
 @ISA    = qw(Exporter);
 @EXPORT = @OUR_VARS;
+$VERSION = '0.01';
 
 ## Constants
 

@@ -1,12 +1,16 @@
-X.XX  Xxx Xxx XX 2013
+0.04  Sat Feb 23 2013
+# The first much-or-less-stable release.
+! lib/CSS/Janus.pm
 ! lib/CSS/Janus/Consts.pm
-  - Imp.: Changed $NON_ASCII so that Unicode texts can be handled.
+  - Imp.: Changed $NON_ASCII to cover Unicode range.
   - Fix: CPAN RT #83423 (Google Code cssjanus issue #20): Exception is
     raised with "background: none;".
   - Imp.: Added pattern for functional color values, rgb(...) etc. to $COLOR.
+  - Requires Perl >= 5.005 since qr{} operators and $10 placeholders are used.
 ! Makefile.PL
   - Workaround for earlier ExtUtils::MakeMaker that doesn't have MY->cd().
   - Downgrade version of EU::MM to support Perl < 5.6.
+  - Added MIN_PERL_VERSION item.
 ! t/18bisBGPositionLength.t
   - Added tests
 
