@@ -10,6 +10,9 @@ my $self = CSS::Janus->new;
 my $testcase;
 my $shouldbe;
 
+# This is for compatibility strength, in reality CSS has no properties
+# that are currently like this.
+
 $testcase = 'alright: 10px';
 $shouldbe = 'alright: 10px';
 is($self->transform($testcase), $shouldbe);

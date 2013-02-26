@@ -2,27 +2,36 @@
 
 use strict;
 #use warnings;
-use Test::More tests => 4;
+use Test::More;
+require 't/ya.pl';
 
-use CSS::Janus;
+BEGIN { plan tests => 24; }
 
-my $self = CSS::Janus->new;
-my $testcase;
-my $shouldbe;
+do5tests(
+    'background: url(/foo/bar.png) top left',
+    'background: url(/foo/bar.png) top right',
+    'background: url(/foo/bar.png) left top',
+    'background: url(/foo/bar.png) right top',
+);
 
-$testcase = 'background: url(/foo/bar.png) top left';
-$shouldbe = 'background: url(/foo/bar.png) top right';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'background: url(/foo/bar.png) top right',
+    'background: url(/foo/bar.png) top left',
+    'background: url(/foo/bar.png) left bottom',
+    'background: url(/foo/bar.png) right bottom',
+);
 
-$testcase = 'background: url(/foo/bar.png) top right';
-$shouldbe = 'background: url(/foo/bar.png) top left';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'background-position: top left',
+    'background-position: top right',
+    'background-position: left top',
+    'background-position: right top',
+);
 
-$testcase = 'background-position: top left';
-$shouldbe = 'background-position: top right';
-is($self->transform($testcase), $shouldbe);
-
-$testcase = 'background-position: top right';
-$shouldbe = 'background-position: top left';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'background-position: top right',
+    'background-position: top left',
+    'background-position: left bottom',
+    'background-position: right bottom',
+);
 

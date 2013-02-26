@@ -3,7 +3,7 @@
 
 use 5.005;    # qr{} is required.
 
-package CSS::Janus::Consts;
+package CSS::Yamaantaka::Consts;
 
 use strict;
 #use warnings;

@@ -1,3 +1,26 @@
+0.04_01  Xxx Xxx XX 2013
+! lib/CSS/Janus.pm
+- lib/CSS/Janus/Consts.pm
++ lib/CSS/Yamaantaka.pm
++ lib/CSS/Yamaantaka/Consts.pm
+  - Imp: Now CSS::Janus is a subclass of CSS::Yamaantaka for generalized
+    transformation.
+  - Imp: Supports cursors with four-letter positions (nwse-resize,
+    nesw-resize).
+  - Chg: renamed fixLeftAndRight() to fixBoxDirection() and
+    fixLeftAndRightInUrl() to fixBoxDirectionInUrl().
+  - Chg: renamed 'swap_left_right_in_url' option to 'flip_url' because
+    it triggers not only simple mirroring.
+  - Imp: New option 'flip_cursor' with default value 1.
+  - Imp: fixBoxDirection() is applied to "line-relative" properties
+    (text-align, float, clear and vertical-align) only when true mirroring
+    (ltr <=> rtl) occurs.
++ t/16bisCursor.t
+  - Added four-letter cases.
++ t/22terSingleBorderRadius.t
+  - Added cases of border-radius with single direction.
+# tests under t/ expanded to non-horizontal cases are not listed above.
+
 0.04  Sat Feb 23 2013
 # The first much-or-less-stable release.
 ! lib/CSS/Janus.pm

@@ -2,42 +2,60 @@
 
 use strict;
 #use warnings;
-use Test::More tests => 7;
+use Test::More;
+require 't/ya.pl';
 
-use CSS::Janus;
-
-my $self = CSS::Janus->new;
-my $testcase;
-my $shouldbe;
+BEGIN { plan tests => 42; }
 
 # we don't want direction to be changed other than in body;
-$testcase = 'direction: ltr';
-$shouldbe = 'direction: ltr';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'direction: ltr',
+    'direction: ltr',
+    'direction: ltr',
+    'direction: ltr',
+);
 
 # we don't want direction to be changed other than in body;
-$testcase = 'direction: rtl';
-$shouldbe = 'direction: rtl';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'direction: rtl',
+    'direction: rtl',
+    'direction: rtl',
+    'direction: rtl',
+);
 
 # we don't want direction to be changed other than in body;
-$testcase = 'input { direction: ltr }';
-$shouldbe = 'input { direction: ltr }';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'input { direction: ltr }',
+    'input { direction: ltr }',
+    'input { direction: ltr }',
+    'input { direction: ltr }',
+);
 
-$testcase = 'body { direction: ltr }';
-$shouldbe = 'body { direction: rtl }';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'body { direction: ltr }',
+    'body { direction: rtl }',
+    'body { direction: ltr }',
+    'body { direction: rtl }',
+);
 
-$testcase = 'body { padding: 10px; direction: ltr; }';
-$shouldbe = 'body { padding: 10px; direction: rtl; }';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'body { padding: 10px; direction: ltr; }',
+    'body { padding: 10px; direction: rtl; }',
+    'body { padding: 10px; direction: ltr; }',
+    'body { padding: 10px; direction: rtl; }',
+);
 
-$testcase = 'body { direction: ltr } .myClass { direction: ltr }';
-$shouldbe = 'body { direction: rtl } .myClass { direction: ltr }';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'body { direction: ltr } .myClass { direction: ltr }',
+    'body { direction: rtl } .myClass { direction: ltr }',
+    'body { direction: ltr } .myClass { direction: ltr }',
+    'body { direction: rtl } .myClass { direction: ltr }',
+);
 
-$testcase = "body{\n direction: ltr\n}";
-$shouldbe = "body{\n direction: rtl\n}";
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    "body{\n direction: ltr\n}",
+    "body{\n direction: rtl\n}",
+    "body{\n direction: ltr\n}",
+    "body{\n direction: rtl\n}",
+);
 

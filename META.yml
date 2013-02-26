@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               CSS-Flip
-version:            0.04
+version:            0.04_01
 abstract:           Flip direction of Cascading Style Sheet (CSS)
 author:
     - Hatuka*nezumi - IKEDA Soji <hatuka@nezumi.nu>

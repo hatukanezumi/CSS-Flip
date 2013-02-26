@@ -8,16 +8,16 @@ require 't/ya.pl';
 BEGIN { plan tests => 12; }
 
 do5tests(
-    'padding-right: bar',
+    'padding-top: bar',
+    'padding-top: bar',
     'padding-left: bar',
-    'padding-bottom: bar',
-    'padding-bottom: bar',
+    'padding-right: bar',
 );
 
 do5tests(
-    'padding-left: bar',
+    'padding-bottom: bar',
+    'padding-bottom: bar',
     'padding-right: bar',
-    'padding-top: bar',
-    'padding-top: bar',
+    'padding-left: bar',
 );
 

@@ -2,56 +2,93 @@
 
 use strict;
 #use warnings;
-use Test::More tests => 10;
+use Test::More;
+require 't/ya.pl';
 
-use CSS::Janus;
+BEGIN { plan tests => 60; }
 
-my $self = CSS::Janus->new(
+my %opts = (
     'swap_ltr_rtl_in_url'    => 0,
     'swap_left_right_in_url' => 0,
 );
-my $testcase;
-my $shouldbe;
 
-$testcase = 'background: url(/foo/bar-left.png)';
-$shouldbe = 'background: url(/foo/bar-left.png)';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'background: url(/foo/bar-left.png)',
+    'background: url(/foo/bar-left.png)',
+    'background: url(/foo/bar-left.png)',
+    'background: url(/foo/bar-left.png)',
+    %opts
+);
 
-$testcase = 'background: url(/foo/left-bar.png)';
-$shouldbe = 'background: url(/foo/left-bar.png)';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'background: url(/foo/left-bar.png)',
+    'background: url(/foo/left-bar.png)',
+    'background: url(/foo/left-bar.png)',
+    'background: url(/foo/left-bar.png)',
+    %opts
+);
 
-$testcase = 'url("http://www.blogger.com/img/triangle_ltr.gif")';
-$shouldbe = 'url("http://www.blogger.com/img/triangle_ltr.gif")';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'url("http://www.blogger.com/img/triangle_ltr.gif")',
+    'url("http://www.blogger.com/img/triangle_ltr.gif")',
+    'url("http://www.blogger.com/img/triangle_ltr.gif")',
+    'url("http://www.blogger.com/img/triangle_ltr.gif")',
+    %opts
+);
 
-$testcase = "url('http://www.blogger.com/img/triangle_ltr.gif')";
-$shouldbe = "url('http://www.blogger.com/img/triangle_ltr.gif')";
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    "url('http://www.blogger.com/img/triangle_ltr.gif')",
+    "url('http://www.blogger.com/img/triangle_ltr.gif')",
+    "url('http://www.blogger.com/img/triangle_ltr.gif')",
+    "url('http://www.blogger.com/img/triangle_ltr.gif')",
+    %opts
+);
 
-$testcase = "url('http://www.blogger.com/img/triangle_ltr.gif'  )";
-$shouldbe = "url('http://www.blogger.com/img/triangle_ltr.gif'  )";
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    "url('http://www.blogger.com/img/triangle_ltr.gif'  )",
+    "url('http://www.blogger.com/img/triangle_ltr.gif'  )",
+    "url('http://www.blogger.com/img/triangle_ltr.gif'  )",
+    "url('http://www.blogger.com/img/triangle_ltr.gif'  )",
+    %opts
+);
 
-$testcase = 'background: url(/foo/bar.left.png)';
-$shouldbe = 'background: url(/foo/bar.left.png)';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'background: url(/foo/bar.left.png)',
+    'background: url(/foo/bar.left.png)',
+    'background: url(/foo/bar.left.png)',
+    'background: url(/foo/bar.left.png)',
+    %opts
+);
 
-$testcase = 'background: url(/foo/bar-rtl.png)';
-$shouldbe = 'background: url(/foo/bar-rtl.png)';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'background: url(/foo/bar-rtl.png)',
+    'background: url(/foo/bar-rtl.png)',
+    'background: url(/foo/bar-rtl.png)',
+    'background: url(/foo/bar-rtl.png)',
+    %opts
+);
 
-$testcase = 'background: url(/foo/bar-rtl.png); left: 10px';
-$shouldbe = 'background: url(/foo/bar-rtl.png); right: 10px';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'background: url(/foo/bar-rtl.png); left: 10px',
+    'background: url(/foo/bar-rtl.png); right: 10px',
+    'background: url(/foo/bar-rtl.png); top: 10px',
+    'background: url(/foo/bar-rtl.png); top: 10px',
+    %opts
+);
 
-$testcase = 'background: url(/foo/bar-right.png); direction: ltr';
-$shouldbe = 'background: url(/foo/bar-right.png); direction: ltr';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'background: url(/foo/bar-right.png); direction: ltr',
+    'background: url(/foo/bar-right.png); direction: ltr',
+    'background: url(/foo/bar-right.png); direction: ltr',
+    'background: url(/foo/bar-right.png); direction: ltr',
+    %opts
+);
 
-$testcase =
-    'background: url(/foo/bar-rtl_right.png);' . 'left:10px; direction: ltr';
-$shouldbe =
-    'background: url(/foo/bar-rtl_right.png);' . 'right:10px; direction: ltr';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'background: url(/foo/bar-rtl_right.png);' . 'left:10px; direction: ltr',
+    'background: url(/foo/bar-rtl_right.png);' . 'right:10px; direction: ltr',
+    'background: url(/foo/bar-rtl_right.png);' . 'top:10px; direction: ltr',
+    'background: url(/foo/bar-rtl_right.png);' . 'top:10px; direction: ltr',
+    %opts
+);
 

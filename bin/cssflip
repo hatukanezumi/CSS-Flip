@@ -44,8 +44,6 @@ print CSS::Janus->new(
 
 __END__
 
-=encoding us-ascii
-
 =head1 NAME
 
 cssflip - Flip direction of Cascading Style Sheet (CSS)
