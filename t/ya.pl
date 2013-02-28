@@ -3,40 +3,43 @@
 use strict;
 use CSS::Janus;
 
-my $janus;
-my $ya;
+my $subtests = 0;
+
+my $obj;
+my @trans = (
+    'lr_tb' => 'rl_tb',
+    'lr_tb' => 'tb_rl',
+    'lr_tb' => 'tb_lr',
+    'rl_tb' => 'tb_lr',
+    'rl_tb' => 'tb_rl',
+    'tb_lr' => 'tb_rl',
+);
 
 sub do5tests {
-    my $ltr_tb = shift;
-    my $rtl_tb = shift;
-    my $ttb_lr = shift;
-    my $ttb_rl = shift;
+    my %in = ();
+    $in{'lr_tb'} = shift;
+    $in{'rl_tb'} = shift;
+    $in{'tb_lr'} = shift;
+    $in{'tb_rl'} = shift;
     my %opts = @_;
 
-    $janus = CSS::Janus->new(%opts);
-    # mirror-h
-    is($janus->transform($ltr_tb), $rtl_tb,
-	"ltr-tb => rtl-tb: mirror-h")
-	if defined $ltr_tb and defined $rtl_tb;
-    # rotate-r
-    is(CSS::Yamaantaka->new('ltr_tb' => 'ttb_rl', %opts)->transform($ltr_tb),
-	$ttb_rl)
-	if defined $ltr_tb and defined $ttb_rl;
-    # mirror-tlbr
-    is(CSS::Yamaantaka->new('ltr_tb' => 'ttb_lr', %opts)->transform($ltr_tb),
-	$ttb_lr)
-	if defined $ltr_tb and defined $ttb_lr;
-    # rotate-l
-    is(CSS::Yamaantaka->new('rtl_tb' => 'ttb_lr', %opts)->transform($rtl_tb),
-	$ttb_lr, "rtl-tb => ttb-lr: rotate-l")
-	if defined $rtl_tb and defined $ttb_lr;
-    # mirror-trbl
-    is(CSS::Yamaantaka->new('rtl_tb' => 'ttb_rl', %opts)->transform($rtl_tb),
-        $ttb_rl, "rtl-tb => ttb-rl: mirror-trbl")
-	if defined $rtl_tb and defined $ttb_rl;
-    # mirror-v
-    is(CSS::Yamaantaka->new('ttb_lr' => 'ttb_rl', %opts)->transform($ttb_lr),
-	$ttb_rl);
+    $subtests++;
+
+    my $i;
+    for ($i = 0; $i < scalar @trans; ) {
+	my $src = $trans[$i++];
+	my $dest = $trans[$i++];
+	next unless defined $in{$src} and defined $in{$dest};
+
+	if ($src eq 'lr_tb' and $dest eq 'rl_tb') {
+	    $obj = CSS::Janus->new(%opts);
+	} else {
+	    $obj = CSS::Yamaantaka->new($src => $dest, %opts);
+	}
+	is($obj->transform($in{$src}), $in{$dest},
+	    "$subtests: $src => $dest: " . $obj->{'adaptor'}
+	);
+    }
 }
 
 1;

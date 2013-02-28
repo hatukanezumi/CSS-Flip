@@ -32,7 +32,7 @@ do5tests(
     'url("http://www.blogger.com/img/triangle_ltr.gif")',
     'url("http://www.blogger.com/img/triangle_rtl.gif")',
     'url("http://www.blogger.com/img/triangle_ltr.gif")',
-    'url("http://www.blogger.com/img/triangle_ltr.gif")',
+    'url("http://www.blogger.com/img/triangle_rtl.gif")',
     %opts
 );
 
@@ -40,7 +40,7 @@ do5tests(
     "url('http://www.blogger.com/img/triangle_ltr.gif')",
     "url('http://www.blogger.com/img/triangle_rtl.gif')",
     "url('http://www.blogger.com/img/triangle_ltr.gif')",
-    "url('http://www.blogger.com/img/triangle_ltr.gif')",
+    "url('http://www.blogger.com/img/triangle_rtl.gif')",
     %opts
 );
 
@@ -48,7 +48,7 @@ do5tests(
     "url('http://www.blogger.com/img/triangle_ltr.gif'  )",
     "url('http://www.blogger.com/img/triangle_rtl.gif'  )",
     "url('http://www.blogger.com/img/triangle_ltr.gif'  )",
-    "url('http://www.blogger.com/img/triangle_ltr.gif'  )",
+    "url('http://www.blogger.com/img/triangle_rtl.gif'  )",
     %opts
 );
 
@@ -72,7 +72,7 @@ do5tests(
     'background: url(/foo/bar-rtl.png)',
     'background: url(/foo/bar-ltr.png)',
     'background: url(/foo/bar-rtl.png)',
-    'background: url(/foo/bar-rtl.png)',
+    'background: url(/foo/bar-ltr.png)',
     %opts
 );
 
@@ -80,23 +80,23 @@ do5tests(
     'background: url(/foo/bar-rtl.png); left: 10px',
     'background: url(/foo/bar-ltr.png); right: 10px',
     'background: url(/foo/bar-rtl.png); top: 10px',
-    'background: url(/foo/bar-rtl.png); top: 10px',
+    'background: url(/foo/bar-ltr.png); top: 10px',
     %opts
 );
 
 do5tests(
     'background: url(/foo/bar-right.png); direction: ltr',
     'background: url(/foo/bar-left.png); direction: ltr',
-    'background: url(/foo/bar-right.png); direction: ltr',
-    'background: url(/foo/bar-right.png); direction: ltr',
+    'background: url(/foo/bar-bottom.png); direction: ltr',
+    'background: url(/foo/bar-bottom.png); direction: ltr',
     %opts
 );
 
 do5tests(
     'background: url(/foo/bar-rtl_right.png);' . 'left:10px; direction: ltr',
     'background: url(/foo/bar-ltr_left.png);' . 'right:10px; direction: ltr',
-    'background: url(/foo/bar-rtl_right.png);' . 'left:10px; direction: ltr',
-    'background: url(/foo/bar-rtl_right.png);' . 'left:10px; direction: ltr',
+    'background: url(/foo/bar-rtl_bottom.png);' . 'top:10px; direction: ltr',
+    'background: url(/foo/bar-ltr_bottom.png);' . 'top:10px; direction: ltr',
     %opts
 );
 

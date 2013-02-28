@@ -4,7 +4,6 @@
 package CSS::Janus;
 
 use strict;
-
 #use warnings;
 use CSS::Yamaantaka;
 
@@ -14,7 +13,7 @@ $VERSION = '0.04_01';
 
 sub new {
     my $pkg = shift;
-    my $self = $pkg->SUPER::new(@_, 'ltr_tb' => 'rtl_tb');
+    my $self = $pkg->SUPER::new(@_, 'adaptor' => 'MirrorH');
     bless $self => $pkg;
 }
 

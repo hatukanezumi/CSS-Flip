@@ -13,19 +13,19 @@ my @args;
 
 @args     = qw(1px 2px 3px 4px);
 $shouldbe = '2px 1px 4px 3px';
-is(CSS::Yamaantaka::reorderBorderRadiusPart('mirror_h', @args), $shouldbe);
+is(CSS::Yamaantaka::reorderBorderRadiusPart('MirrorH', @args), $shouldbe);
 
 @args     = qw(1px 2px 3px);
 $shouldbe = '2px 1px 2px 3px';
-is(CSS::Yamaantaka::reorderBorderRadiusPart('mirror_h', @args), $shouldbe);
+is(CSS::Yamaantaka::reorderBorderRadiusPart('MirrorH', @args), $shouldbe);
 
 @args     = qw(1px 2px);
 $shouldbe = '2px 1px';
-is(CSS::Yamaantaka::reorderBorderRadiusPart('mirror_h', @args), $shouldbe);
+is(CSS::Yamaantaka::reorderBorderRadiusPart('MirrorH', @args), $shouldbe);
 
 @args     = qw(1px);
 $shouldbe = '1px';
-is(CSS::Yamaantaka::reorderBorderRadiusPart('mirror_h', @args), $shouldbe);
+is(CSS::Yamaantaka::reorderBorderRadiusPart('MirrorH', @args), $shouldbe);
 
 @args =
     ('X', '', ': ', '1px', '2px', '3px', '4px', '5px', '6px', undef, '7px');
