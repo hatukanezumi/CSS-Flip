@@ -1,4 +1,4 @@
-0.04_01  Xxx Xxx XX 2013
+0.04_01  Sat Mar 02 2013
 ! lib/CSS/Janus.pm
 - lib/CSS/Janus/Consts.pm
 + lib/CSS/Yamaantaka.pm
@@ -15,6 +15,8 @@
   - Imp: fixBoxDirection() is applied to "line-relative" properties
     (text-align, float, clear and vertical-align) only when true mirroring
     (ltr <=> rtl) occurs.
+  - Imp: Properties including "right"/"left" proposed to be dropped
+    won't flip: ruby-position: right & ruby-align: left/right by IE.
 + t/16bisCursor.t
   - Added four-letter cases.
 + t/22terSingleBorderRadius.t

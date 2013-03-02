@@ -18,7 +18,7 @@ WriteMakefile(
     'NAME'               => 'CSS::Flip',
     'ABSTRACT'           => 'Flip direction of Cascading Style Sheet (CSS)',
     'VERSION'            => '0.04_01',
-    'AUTHOR'             => ['Hatuka*nezumi - IKEDA Soji <hatuka@nezumi.nu>'],
+    'AUTHOR'             => 'Hatuka*nezumi - IKEDA Soji <hatuka@nezumi.nu>',
     'LICENSE'            => 'perl',
     'MIN_PERL_VERSION'   => 5.005,
     'CONFIGURE_REQUIRES' => {'ExtUtils::MakeMaker' => '6.26',},

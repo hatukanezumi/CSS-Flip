@@ -24,7 +24,37 @@ values directed to "right" or "vertical-rl", and so on.
 
 =head2 Transforming directions
 
-This module chooses transformation by source & dest directions:
+Four directions of documents are supported:
+
+=over 4
+
+=item lr-tb
+
+The direction specified by
+C<{ direction: ltr; writing-mode: horizontal-tb; }>.
+For example, most Western writing systems employ it.
+
+=item rl-tb
+
+The direction specified by
+C<{ direction: rtl; writing-mode: horizontal-tb; }>.
+For example, some Middle Eastern writing systems employ it.
+
+=item tb-lr
+
+The direction specified by
+C<{ writing-mode: vertical-lr; }>.
+For example, several North Asian writing systems employ it.
+
+=item lr-tb
+
+The direction specified by
+C<{ writing-mode: vertical-rl; }>.
+East Asian writing systems with vertical layout employ it.
+
+=back
+
+This module chooses transformation by source & resulting directions:
 
   +-----------+-------------+-------------+-------------+--------------+
   | from \ to | lr-tb       : rl-tb       : tb-lr       : tb-rl        |
@@ -53,7 +83,8 @@ vertical) as below:
   | MirrorTR_BL |     -     : revert with tr-bl axis   :    -   : swap |
   +-------------+-----------+--------------------------+--------+------+
 
-This module won't fix line-relative text directions ("rtl" / "ltr").
+Currently, this module won't fix line-relative text directions
+("rtl" / "ltr").
 
 =cut
 
@@ -80,35 +111,10 @@ $BASE_REVISION = 'http://cssjanus.googlecode.com/svn/trunk@31';
 Creates new CSS::Yamaantaka object.
 
 SRC and DEST are the original and resulting directions.
-Available directions are:
-
-=over 4
-
-=item C<'lr_tb'>
-
-The texts run from left to right horizontally, and the lines extend from
-top to bottom.
-A synonim is C<'ltr'>.
-
-=item C<'rl_tb'>
-
-The texts run from right to left horizontally, and the lines extend from
-top to bottom.
-A synonym is C<'rtl'>.
-
-=item C<'tb_lr'>
-
-The texts run from top to bottom vertically, and the lines extend from
-left to right.
-A synonym is C<'vertical-lr'>.
-
-=item C<'tb_rl'>
-
-The texts run from top to bottm vertically, and the lines extend from
-right to left.
-A synonim is C<'vertical-rl'>.
-
-=back
+Available directions are
+C<'lr_tb'>, C<'rl_tb'>, C<'tb_lr'> and C<'tb_rl'>.
+Their synonyms are C<'ltr'>, C<'rtl'>, C<'vertical-lr'> and C<'vertical-rl'>,
+respectively.
 
 Following options are available.
 
@@ -147,7 +153,7 @@ my %defaults = (
     'flip_cursor'         => 1,
 );
 
-my %dir_synonim = (
+my %dir_synonym = (
     'ltr'         => 'lr_tb',
     'rtl'         => 'rl_tb',
     'vertical-lr' => 'tb_lr',
@@ -195,10 +201,10 @@ sub new {
     my ($src) = grep {/^((lr|rl)_tb|tb_(lr|rl)|ltr|rtl|vertical-(lr|rl))$/}
 	keys %$self;
     if ($src) {
-	$src = $dir_synonim{$src} || $src;
+	$src = $dir_synonym{$src} || $src;
 	my $dest = $self->{$src};
 	if ($dest) {
-	    $dest = $dir_synonim{$dest} || $dest;
+	    $dest = $dir_synonym{$dest} || $dest;
 	    $self->{'body_direction'}   = $body_direction{$dest};
 	    $self->{'writing_mode'}     = $writing_mode{$dest};
 	    $self->{'text_orientation'} = $text_orientation{$src, $dest};
@@ -287,6 +293,7 @@ my $BOX_DIRECTION_IN_URL_RE =
 
 my $LINE_RELATIVE_DIRECTION_RE =
     qr<((?:(?:$IDENT)?text-align(?:-last)?|float|clear|vertical-align)\s*:\s*[^;}]*;?)>;
+my $DROPPED_DIRECTION_RE = qr<((?:ruby-position|ruby-align)\s*:\s*[^;}]*;?)>;
 
 sub fixBoxDirectionPart {
     my $adaptor   = shift;
@@ -884,7 +891,14 @@ sub transform {
 	}eg;
     }
 
+    # Tokenize properties including "right"/"left" proposed to be dropped
+    $line =~ s{$DROPPED_DIRECTION_RE}{
+	push @originals, $1;
+	'~DROPPED_DIRECTION_' . (scalar @originals) . '~'
+    }eg;
+
     # Here start the various direction fixes.
+
     $line = $self->fixBodyDirectionLtrAndRtl($line);
 
     if ($flip_url) {
@@ -922,6 +936,9 @@ sub transform {
     $line =~ s{~BORDER_RADIUS_(\d+)~}{$originals[$1 - 1]}eg;
 
     $line = $self->fixBackgroundPosition($line);
+
+    # DeTokenize properties including "right"/"left" proposed to be dropped
+    $line =~ s{~DROPPED_DIRECTION_(\d+)~}{$originals[$1 - 1]}eg;
 
     # DeTokenize line-relative properties, if any
     $line =~ s{~LINE_RELATIVE_(\d+)~}{$originals[$1 - 1]}eg;
