@@ -2,28 +2,36 @@
 
 use strict;
 #use warnings;
-use Test::More tests => 4;
+use Test::More;
+require 't/ya.pl';
 
-use CSS::Janus;
+BEGIN { plan tests => 24; }
 
-my $self = CSS::Janus->new;
-my $testcase;
-my $shouldbe;
-my @args;
+do5tests(
+    'border-top-left-radius: 1px',
+    'border-top-right-radius: 1px',
+    'border-top-left-radius: 1px',
+    'border-top-right-radius: 1px',
+);
 
-$testcase = 'border-top-left-radius: 1px';
-$shouldbe = 'border-top-right-radius: 1px';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    '-moz-border-radius-topright: 1px',
+    '-moz-border-radius-topleft: 1px',
+    '-moz-border-radius-bottomleft: 1px',
+    '-moz-border-radius-bottomright: 1px',
+);
 
-$testcase = '-moz-border-radius-topright: 1px';
-$shouldbe = '-moz-border-radius-topleft: 1px';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    'border-bottom-right-radius: 1px 2px',
+    'border-bottom-left-radius: 1px 2px',
+    'border-bottom-right-radius: 2px 1px',
+    'border-bottom-left-radius: 2px 1px',
+);
 
-$testcase = 'border-bottom-right-radius: 1px 2px';
-$shouldbe = 'border-bottom-left-radius: 1px 2px';
-is($self->transform($testcase), $shouldbe);
-
-$testcase = '-moz-border-radius-bottomleft: 1px 2px';
-$shouldbe = '-moz-border-radius-bottomright: 1px 2px';
-is($self->transform($testcase), $shouldbe);
+do5tests(
+    '-moz-border-radius-bottomleft: 1px 2px',
+    '-moz-border-radius-bottomright: 1px 2px',
+    '-moz-border-radius-topright: 2px 1px',
+    '-moz-border-radius-topleft: 2px 1px',
+);
 

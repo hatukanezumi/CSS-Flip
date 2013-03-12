@@ -27,13 +27,19 @@ BEGIN {
 	$LEFT_RE $RIGHT_RE $LEFT_IN_URL_RE $RIGHT_IN_URL_RE
 	$LTR_IN_URL_RE $RTL_IN_URL_RE
 	$COMMENT_RE $NOFLIP_SINGLE_RE $NOFLIP_CLASS_RE
-	$BORDER_RADIUS_TOKENIZER_RE);
+	$BORDER_RADIUS_TOKENIZER_RE
+
+	$SINGLE_BORDER_RADIUS_RE $SINGLE_BORDER_RADIUS_TOKENIZER_RE
+	$BOX_DIRECTIONS_RE $BOX_DIRECTION_IN_URL_RE
+	$LINE_RELATIVE_DIRECTION_RE $PROHIBITED_DIRECTION_RE
+	$CURSOR_DIRECTION_RE
+    );
 }
 use vars qw(@ISA @EXPORT $VERSION), @OUR_VARS;
 use Exporter;
-@ISA    = qw(Exporter);
-@EXPORT = @OUR_VARS;
-$VERSION = '0.01';
+@ISA     = qw(Exporter);
+@EXPORT  = @OUR_VARS;
+$VERSION = '0.04_02';
 
 ## Constants
 
@@ -114,7 +120,9 @@ $FOUR_NOTATION_COLOR_RE =
 $BORDER_RADIUS_RE =
     qr<((?:$IDENT)?)border-radius(\s*:\s*)(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY)(?:\s*/\s*(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY))?>i;
 
+# Not used: use $CURSOR_DIRECTION_RE
 $CURSOR_EAST_RE = qr<$LOOKBEHIND_NOT_LETTER([ns]?)e-resize>;
+# ditto
 $CURSOR_WEST_RE = qr<$LOOKBEHIND_NOT_LETTER([ns]?)w-resize>;
 
 # Term of background property.  Gradirents may not be included because they
@@ -146,12 +154,16 @@ $BODY_DIRECTION_LTR_RE =
 $BODY_DIRECTION_RTL_RE =
     qr<(body\s*{\s*)($CHARS_WITHIN_SELECTOR)(direction\s*:\s*)(rtl)>i;
 
+# Not used: use $BOX_DIRECTION_RE.
 $LEFT_RE =
     qr<$LOOKBEHIND_NOT_LETTER((?:top|bottom)?)(left)$LOOKAHEAD_NOT_CLOSING_PAREN$LOOKAHEAD_NOT_OPEN_BRACE>i;
+# ditto
 $RIGHT_RE =
     qr<$LOOKBEHIND_NOT_LETTER((?:top|bottom)?)(right)$LOOKAHEAD_NOT_CLOSING_PAREN$LOOKAHEAD_NOT_OPEN_BRACE>i;
+# Not used: use $BOX_DIRECTION_IN_URL_RE.
 $LEFT_IN_URL_RE =
     qr<$LOOKBEHIND_NOT_LETTER(left)$LOOKAHEAD_FOR_CLOSING_PAREN>i;
+# ditto
 $RIGHT_IN_URL_RE =
     qr<$LOOKBEHIND_NOT_LETTER(right)$LOOKAHEAD_FOR_CLOSING_PAREN>i;
 $LTR_IN_URL_RE = qr<$LOOKBEHIND_NOT_LETTER(ltr)$LOOKAHEAD_FOR_CLOSING_PAREN>i;
@@ -162,5 +174,28 @@ $NOFLIP_SINGLE_RE =
     qr<(/\*\s*\@noflip\s*\*/$LOOKAHEAD_NOT_OPEN_BRACE[^;}]+;?)>i;
 $NOFLIP_CLASS_RE = qr<(/\*\s*\@noflip\s*\*/$CHARS_WITHIN_SELECTOR})>i;
 $BORDER_RADIUS_TOKENIZER_RE = qr<((?:$IDENT)?border-radius\s*:[^;}]+;?)>i;
+
+## Regexps added by CSS-Flip package.
+
+# border-radius with single position.
+$SINGLE_BORDER_RADIUS_RE =
+    qr<((?:$IDENT)?)border-(?:(top|bottom)-(left|right)-radius|radius-(top|bottom)(left|right))(\s*:\s*)(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY)>i;
+$SINGLE_BORDER_RADIUS_TOKENIZER_RE =
+    qr<((?:$IDENT)?border-(?:(top|bottom)-(left|right)-radius|radius-(top|bottom)(left|right))\s*:[^;}]+;?)>i;
+# box directions.
+$BOX_DIRECTIONS_RE =
+    qr<$LOOKBEHIND_NOT_LETTER(?:(top|bottom|center)(\s+|-)(left|right|center)|(top|right|bottom|left))$LOOKAHEAD_NOT_CLOSING_PAREN$LOOKAHEAD_NOT_OPEN_BRACE>i;
+# box directions in URL.
+$BOX_DIRECTION_IN_URL_RE =
+    qr<$LOOKBEHIND_NOT_LETTER(top|right|bottom|left)$LOOKAHEAD_FOR_CLOSING_PAREN>i;
+# Reversed only by ltr <-> rtl transformation.
+$LINE_RELATIVE_DIRECTION_RE =
+    qr<((?:(?:$IDENT)?text-align(?:-last)?|float|clear|vertical-align)\s*:\s*[^;}]*;?)>;
+# Won't reverse left/right.
+$PROHIBITED_DIRECTION_RE =
+    qr<((?:ruby-position|ruby-align|text-emphasis-position|text-underline-position)\s*:\s*[^;}]*;?)>;
+# cursor positions.
+$CURSOR_DIRECTION_RE =
+    qr<$LOOKBEHIND_NOT_LETTER(nesw|nwse|[ns][we]|[nswe])-resize>;
 
 1;

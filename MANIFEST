@@ -3,6 +3,19 @@ Changes
 lib/CSS/Janus.pm
 lib/CSS/Yamaantaka.pm
 lib/CSS/Yamaantaka/Consts.pm
+lib/CSS/Yamaantaka/MirrorH.pm
+lib/CSS/Yamaantaka/MirrorTL_BR.pm
+lib/CSS/Yamaantaka/MirrorTR_BL.pm
+lib/CSS/Yamaantaka/MirrorV.pm
+lib/CSS/Yamaantaka/RotateL.pm
+lib/CSS/Yamaantaka/RotateR.pm
+lib/CSS/Yamaantaka/_Mirror.pm
+lib/CSS/Yamaantaka/_NoReverseGD.pm
+lib/CSS/Yamaantaka/_NoReverseLR.pm
+lib/CSS/Yamaantaka/_NoSwapHV.pm
+lib/CSS/Yamaantaka/_ReverseGD.pm
+lib/CSS/Yamaantaka/_ReverseLR.pm
+lib/CSS/Yamaantaka/_SwapHV.pm
 Makefile.PL
 MANIFEST			This list of files
 META.json
@@ -34,6 +47,7 @@ t/17BGPosition.t
 t/18BGPositionPercentage.t
 t/18bisBGPositionLength.t
 t/19DirectionalClassnames.t
+t/19bisDirectionalClassnames.t
 t/20LongLineWithMultipleDefs.t
 t/21NoFlip.t
 t/22BorderRadiusNotation.t

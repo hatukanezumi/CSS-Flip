@@ -8,12 +8,12 @@ use strict;
 use CSS::Yamaantaka;
 
 use vars qw(@ISA $VERSION);
-$VERSION = '0.04_01';
+$VERSION = '0.04_02';
 @ISA     = qw(CSS::Yamaantaka);
 
 sub new {
     my $pkg = shift;
-    my $self = $pkg->SUPER::new(@_, 'adaptor' => 'MirrorH');
+    my $self = $pkg->SUPER::new(@_, 'adaptor' => 'CSS::Yamaantaka::MirrorH');
     bless $self => $pkg;
 }
 
@@ -106,9 +106,13 @@ Consult C<$VERSION> variable.
 
 =head1 SEE ALSO
 
-CSSJanus L<http://cssjanus.commoner.com/>.
+CSSJanus, L<http://cssjanus.commoner.com/>
 
-A PHP port of CSSJanus L<http://www.mediawiki.org/wiki/Manual:CSSJanus.php>.
+A PHP port of CSSJanus, L<http://www.mediawiki.org/wiki/Manual:CSSJanus.php>
+
+L<CSS::Yamaantaka>
+
+L<cssflip>
 
 =head1 AUTHOR
 

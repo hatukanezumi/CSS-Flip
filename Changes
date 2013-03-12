@@ -1,3 +1,33 @@
+0.04_02  Xxx Mar XX 2013
+! bin/cssflip
+! lib/CSS/Janus.pm
+! lib/CSS/Yamaantaka.pm
++ lib/CSS/Yamaantaka/MirrorH.pm
++ lib/CSS/Yamaantaka/MirrorV.pm
++ lib/CSS/Yamaantaka/_NoRevertGD.pm
++ lib/CSS/Yamaantaka/_NoRevertLR.pm
++ lib/CSS/Yamaantaka/_NoSwapHV.pm
++ lib/CSS/Yamaantaka/_RevertGD.pm
++ lib/CSS/Yamaantaka/_RevertLR.pm
++ lib/CSS/Yamaantaka/_SwapHV.pm
++ lib/CSS/Yamaantaka/MirrorTL_BR.pm
++ lib/CSS/Yamaantaka/MirrorTR_BL.pm
++ lib/CSS/Yamaantaka/RotateL.pm
++ lib/CSS/Yamaantaka/RotateR.pm
++ lib/CSS/Yamaantaka/_Mirror.pm
+  - Divided each transformation into adaptor classes.
+  - Fix: Handles paired directions such as "center right", "top-left" in
+    property names and values properly.
+! lib/CSS/Yamaantaka/Consts.pm
+  - Added new constants.
+! t/17BGPosition.t
+  - Fixed tests
+! t/19DirectionalClassnames.t
++ t/19bisDirectionalClassnames.t
+! t/22bisBorderRadiusNotation.t
+! t/22terSingleBorderRadius.t
+  - Added top/bottom cases
+
 0.04_01  Sat Mar 02 2013
 ! lib/CSS/Janus.pm
 - lib/CSS/Janus/Consts.pm

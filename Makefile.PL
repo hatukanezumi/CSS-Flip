@@ -17,7 +17,7 @@ sub postamble {
 WriteMakefile(
     'NAME'               => 'CSS::Flip',
     'ABSTRACT'           => 'Flip direction of Cascading Style Sheet (CSS)',
-    'VERSION'            => '0.04_01',
+    'VERSION'            => '0.04_02',
     'AUTHOR'             => 'Hatuka*nezumi - IKEDA Soji <hatuka@nezumi.nu>',
     'LICENSE'            => 'perl',
     'MIN_PERL_VERSION'   => 5.005,
@@ -25,6 +25,7 @@ WriteMakefile(
     'PREREQ_PM'          => {'Test::More' => '0.45',},
     'EXE_FILES'          => [qw(bin/cssflip)],
     'META_MERGE'         => {
+	'no_index'  => {'directory' => ['lib/CSS/Yamaantaka'],},
 	'resources' => {
 	    'license'    => 'http://dev.perl.org/licenses/',
 	    'repository' => 'http://repos.nezumi.nu/repos/CSS-Flip/',

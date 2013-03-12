@@ -16,7 +16,8 @@
    "no_index" : {
       "directory" : [
          "t",
-         "inc"
+         "inc",
+         "lib/CSS/Yamaantaka"
       ]
    },
    "prereqs" : {
@@ -46,5 +47,5 @@
          "url" : "http://repos.nezumi.nu/repos/CSS-Flip/"
       }
    },
-   "version" : "0.04_01"
+   "version" : "0.04_02"
 }

@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               CSS-Flip
-version:            0.04_01
+version:            0.04_02
 abstract:           Flip direction of Cascading Style Sheet (CSS)
 author:
     - Hatuka*nezumi - IKEDA Soji <hatuka@nezumi.nu>
@@ -20,6 +20,7 @@ no_index:
     directory:
         - t
         - inc
+        - lib/CSS/Yamaantaka
 generated_by:       ExtUtils::MakeMaker version 6.57_05
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html

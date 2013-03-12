@@ -22,70 +22,6 @@ CSS::Yamaantaka replaces things directed to "left" or "horizontal-tb" in a
 Cascading Style Sheet (CSS) file such as float, padding, margin with
 values directed to "right" or "vertical-rl", and so on.
 
-=head2 Transforming directions
-
-Four directions of documents are supported:
-
-=over 4
-
-=item lr-tb
-
-The direction specified by
-C<{ direction: ltr; writing-mode: horizontal-tb; }>.
-For example, most Western writing systems employ it.
-
-=item rl-tb
-
-The direction specified by
-C<{ direction: rtl; writing-mode: horizontal-tb; }>.
-For example, some Middle Eastern writing systems employ it.
-
-=item tb-lr
-
-The direction specified by
-C<{ writing-mode: vertical-lr; }>.
-For example, several North Asian writing systems employ it.
-
-=item lr-tb
-
-The direction specified by
-C<{ writing-mode: vertical-rl; }>.
-East Asian writing systems with vertical layout employ it.
-
-=back
-
-This module chooses transformation by source & resulting directions:
-
-  +-----------+-------------+-------------+-------------+--------------+
-  | from \ to | lr-tb       : rl-tb       : tb-lr       : tb-rl        |
-  +-----------+-------------+-------------+-------------+--------------+
-  | lr-tb     |      -      : MirrorH     : MirrorTL_BR : RotateR      |
-  | rl-tb     | MirrorH     :      -      : RotateL*    : MirrorTR_BL* |
-  | tb-lr     | MirrorTL_BR : RotateR     :      -      : MirrorV      |
-  | tb-rl     | RotateL     : MirrorTR_BL : MirrorV     :       -      |
-  +-----------+-------------+-------------+-------------+--------------+
-   * Assumed text-orientation: sideways-left.
-
-Each transformation changes line-relative box directions ("right" / "left" of
-text-align, float and clear, and "top" / "bottom" of vertical-align), physical
-box directions ("top" / "right" / "bottom" / "left"), global directions
-specified by body element ("ltr" / "rtl") and direction swapping (horizontal /
-vertical) as below:
-
-  +-------------+-----------+--------------------------+--------+------+
-  |             | line-rel. | box directions           : g. dir : h/v  |
-  +-------------+-----------+--------------------------+--------+------+
-  | MirrorH     | revert h. : revert horizontally      : revert :   -  |
-  | MirrorV     |     -     : revert horizontally      : revert :   -  |
-  | RotateR     |     -     : rotate clockwise         : revert : swap |
-  | RotateL     |     -     : rotate counter-clockwise : revert : swap |
-  | MirrorTL_BR |     -     : revert with tl-br axis   :    -   : swap |
-  | MirrorTR_BL |     -     : revert with tr-bl axis   :    -   : swap |
-  +-------------+-----------+--------------------------+--------+------+
-
-Currently, this module won't fix line-relative text directions
-("rtl" / "ltr").
-
 =cut
 
 use 5.005;    # qr{} and $10 are required.
@@ -99,18 +35,20 @@ use CSS::Yamaantaka::Consts;
 
 # To be compatible with Perl 5.5.
 use vars qw($VERSION $BASE_REVISION);
-$VERSION       = '0.04_01';
+$VERSION       = '0.04_02';
 $BASE_REVISION = 'http://cssjanus.googlecode.com/svn/trunk@31';
 
 =head2 Constructor
 
 =over 4
 
-=item new ( SRC => DEST, [ options... ] )
+=item new ( SRC =E<gt> DEST, [ options... ] )
+
+=item new ( C<'adaptor'> =E<gt> ADAPTOR, [ options... ] )
 
 Creates new CSS::Yamaantaka object.
 
-SRC and DEST are the original and resulting directions.
+In first form, SRC and DEST are the original and resulting directions.
 Available directions are
 C<'lr_tb'>, C<'rl_tb'>, C<'tb_lr'> and C<'tb_rl'>.
 Their synonyms are C<'ltr'>, C<'rtl'>, C<'vertical-lr'> and C<'vertical-rl'>,
@@ -142,6 +80,11 @@ Default is C<1>, will fix.
 
 =back
 
+In second form, ADAPTOR is a name of package or an object.
+package will be automatically loaded.
+See L</Adaptors> about standard adaptors.
+See sources to find out how to implement your own adaptor.
+
 =back
 
 =cut
@@ -161,18 +104,18 @@ my %dir_synonym = (
 );
 
 my %adaptor = (
-    "lr_tb$;rl_tb" => 'MirrorH',
-    "rl_tb$;lr_tb" => 'MirrorH',
-    "lr_tb$;tb_lr" => 'MirrorTL_BR',
-    "tb_lr$;lr_tb" => 'MirrorTL_BR',
-    "lr_tb$;tb_rl" => 'RotateR',
-    "tb_rl$;lr_tb" => 'RotateL',
-    "rl_tb$;tb_lr" => 'RotateL',
-    "tb_lr$;rl_tb" => 'RotateR',
-    "rl_tb$;tb_rl" => 'MirrorTR_BL',
-    "tb_rl$;rl_tb" => 'MirrorTR_BL',
-    "tb_lr$;tb_rl" => 'MirrorV',
-    "tb_rl$;tb_lr" => 'MirrorV',
+    "lr_tb$;rl_tb" => 'CSS::Yamaantaka::MirrorH',
+    "rl_tb$;lr_tb" => 'CSS::Yamaantaka::MirrorH',
+    "lr_tb$;tb_lr" => 'CSS::Yamaantaka::MirrorTL_BR',
+    "tb_lr$;lr_tb" => 'CSS::Yamaantaka::MirrorTL_BR',
+    "lr_tb$;tb_rl" => 'CSS::Yamaantaka::RotateR',
+    "tb_rl$;lr_tb" => 'CSS::Yamaantaka::RotateL',
+    "rl_tb$;tb_lr" => 'CSS::Yamaantaka::RotateL',
+    "tb_lr$;rl_tb" => 'CSS::Yamaantaka::RotateR',
+    "rl_tb$;tb_rl" => 'CSS::Yamaantaka::MirrorTR_BL',
+    "tb_rl$;rl_tb" => 'CSS::Yamaantaka::MirrorTR_BL',
+    "tb_lr$;tb_rl" => 'CSS::Yamaantaka::MirrorV',
+    "tb_rl$;tb_lr" => 'CSS::Yamaantaka::MirrorV',
 );
 
 my %body_direction = (
@@ -200,10 +143,11 @@ sub new {
 
     my ($src) = grep {/^((lr|rl)_tb|tb_(lr|rl)|ltr|rtl|vertical-(lr|rl))$/}
 	keys %$self;
+    my $dest;
     if ($src) {
-	$src = $dir_synonym{$src} || $src;
-	my $dest = $self->{$src};
+	$dest = $self->{$src};
 	if ($dest) {
+	    $src  = $dir_synonym{$src}  || $src;
 	    $dest = $dir_synonym{$dest} || $dest;
 	    $self->{'body_direction'}   = $body_direction{$dest};
 	    $self->{'writing_mode'}     = $writing_mode{$dest};
@@ -211,7 +155,14 @@ sub new {
 	    $self->{'adaptor'}          = $adaptor{$src, $dest};
 	}
     }
-    croak 'available transformation not found' unless $self->{'adaptor'};
+    unless ($src and $dest and $src eq $dest) {
+	croak 'available adaptor not found'
+	    unless $self->{'adaptor'};
+    }
+    if ($self->{'adaptor'} and !ref $self->{'adaptor'}) {
+	eval "use $self->{'adaptor'}";
+	croak $@ if $@;
+    }
 
     # compat.
     if (defined $self->{'swap_left_right_in_url'}) {
@@ -270,76 +221,13 @@ sub fixBodyDirectionLtrAndRtl {
     my $adaptor = $self->{'adaptor'};
 
     return $line
-	if $adaptor eq 'MirrorTL_BR' or
-	    $adaptor eq 'MirrorTR_BL';
+	unless $adaptor->willReverseGlobalDirection;
 
     $line =~ s{$BODY_DIRECTION_LTR_RE}{$1$2$3~TMP~}g;
     $line =~ s{$BODY_DIRECTION_RTL_RE}{$1$2$3ltr}g;
     $line =~ s{~TMP~}{rtl}g;
 
     return $line;
-}
-
-my $SINGLE_BORDER_RADIUS_RE =
-    qr<((?:$IDENT)?)border-(?:(top|bottom)-(left|right)-radius|radius-(top|bottom)(left|right))(\s*:\s*)(?:$POSSIBLY_NEGATIVE_QUANTITY\s+)?(?:$POSSIBLY_NEGATIVE_QUANTITY)>i;
-my $SINGLE_BORDER_RADIUS_TOKENIZER_RE =
-    qr<((?:$IDENT)?border-(?:(top|bottom)-(left|right)-radius|radius-(top|bottom)(left|right))\s*:[^;}]+;?)>i;
-
-my $BOX_DIRECTION_RE =
-    qr<$LOOKBEHIND_NOT_LETTER(top|right|bottom|left)$LOOKAHEAD_NOT_CLOSING_PAREN$LOOKAHEAD_NOT_OPEN_BRACE>i;
-
-my $BOX_DIRECTION_IN_URL_RE =
-    qr<$LOOKBEHIND_NOT_LETTER(top|right|bottom|left)$LOOKAHEAD_FOR_CLOSING_PAREN>i;
-
-my $LINE_RELATIVE_DIRECTION_RE =
-    qr<((?:(?:$IDENT)?text-align(?:-last)?|float|clear|vertical-align)\s*:\s*[^;}]*;?)>;
-my $DROPPED_DIRECTION_RE = qr<((?:ruby-position|ruby-align)\s*:\s*[^;}]*;?)>;
-
-sub fixBoxDirectionPart {
-    my $adaptor   = shift;
-    my $direction = shift;
-
-    if ($adaptor eq 'MirrorH' or $adaptor eq 'MirrorV') {
-	return {
-	    'right' => 'left',
-	    'left'  => 'right',
-	    }->{$direction} ||
-	    $direction;
-    } elsif ($adaptor eq 'MirrorTL_BR') {
-	return {
-	    'top'    => 'left',
-	    'right'  => 'bottom',
-	    'bottom' => 'right',
-	    'left'   => 'top',
-	    }->{$direction} ||
-	    $direction;
-    } elsif ($adaptor eq 'MirrorTR_BL') {
-	return {
-	    'top'    => 'right',
-	    'right'  => 'top',
-	    'bottom' => 'left',
-	    'left'   => 'bottom',
-	    }->{$direction} ||
-	    $direction;
-    } elsif ($adaptor eq 'RotateR') {
-	return {
-	    'top'    => 'right',
-	    'right'  => 'bottom',
-	    'bottom' => 'left',
-	    'left'   => 'top',
-	    }->{$direction} ||
-	    $direction;
-    } elsif ($adaptor eq 'RotateL') {
-	return {
-	    'top'    => 'left',
-	    'right'  => 'top',
-	    'bottom' => 'right',
-	    'left'   => 'bottom',
-	    }->{$direction} ||
-	    $direction;
-    } else {
-	croak "This can't happen!";
-    }
 }
 
 # fixSingleBorderRadius ($line)
@@ -349,20 +237,20 @@ sub fixSingleBorderRadiusName {
     my @m       = @_;
 
     if (defined $m[0]) {
-	if ($adaptor eq 'MirrorH' or $adaptor eq 'MirrorV') {
-	    return 'border-' . fixBoxDirectionPart($adaptor, $m[0]) . '-' .
-		fixBoxDirectionPart($adaptor, $m[1]) . '-radius';
+	unless ($adaptor->willSwapHorizontalVertical) {
+	    return 'border-' . $adaptor->fixBoxDirectionPart($m[0]) . '-' .
+		$adaptor->fixBoxDirectionPart($m[1]) . '-radius';
 	} else {
-	    return 'border-' . fixBoxDirectionPart($adaptor, $m[1]) . '-' .
-		fixBoxDirectionPart($adaptor, $m[0]) . '-radius';
+	    return 'border-' . $adaptor->fixBoxDirectionPart($m[1]) . '-' .
+		$adaptor->fixBoxDirectionPart($m[0]) . '-radius';
 	}
     } else {
-	if ($adaptor eq 'MirrorH' or $adaptor eq 'MirrorV') {
-	    return 'border-radius-' . fixBoxDirectionPart($adaptor, $m[2]) .
-		fixBoxDirectionPart($adaptor, $m[3]);
+	unless ($adaptor->willSwapHorizontalVertical) {
+	    return 'border-radius-' . $adaptor->fixBoxDirectionPart($m[2]) .
+		$adaptor->fixBoxDirectionPart($m[3]);
 	} else {
-	    return 'border-radius-' . fixBoxDirectionPart($adaptor, $m[3]) .
-		fixBoxDirectionPart($adaptor, $m[2]);
+	    return 'border-radius-' . $adaptor->fixBoxDirectionPart($m[3]) .
+		$adaptor->fixBoxDirectionPart($m[2]);
 	}
     }
 }
@@ -374,7 +262,7 @@ sub fixSingleBorderRadius {
 
     $line =~ s{$SINGLE_BORDER_RADIUS_RE}{
 	if (defined $7) {
-	    if ($adaptor eq 'MirrorH' or $adaptor eq 'MirrorV') {
+	    unless ($adaptor->willSwapHorizontalVertical) {
 		$1 . fixSingleBorderRadiusName($adaptor, $2, $3, $4, $5) .
 		    "$6$7 $8";
 	    } else {
@@ -403,8 +291,16 @@ sub fixBoxDirection {
     my $line    = shift;
     my $adaptor = $self->{'adaptor'};
 
-    $line =~ s{$BOX_DIRECTION_RE}{
-	fixBoxDirectionPart($adaptor, $1)
+    $line =~ s{$BOX_DIRECTIONS_RE}{
+	if (defined $4) {
+	    $adaptor->fixBoxDirectionPart($4);
+	} elsif ($adaptor->willSwapHorizontalVertical) {
+	    $adaptor->fixBoxDirectionPart($3) . $2 .
+	    $adaptor->fixBoxDirectionPart($1);
+	} else {
+	    $adaptor->fixBoxDirectionPart($1) . $2 .
+	    $adaptor->fixBoxDirectionPart($3);
+	}
     }eg;
 
     return $line;
@@ -423,7 +319,7 @@ sub fixBoxDirectionInUrl {
     my $adaptor = $self->{'adaptor'};
 
     $line =~ s{$BOX_DIRECTION_IN_URL_RE}{
-	fixBoxDirectionPart($adaptor, $1)
+	$adaptor->fixBoxDirectionPart($1);
     }eg;
 
     return $line;
@@ -440,8 +336,7 @@ sub fixLtrAndRtlInUrl {
     my $adaptor = $self->{'adaptor'};
 
     return $line
-	if $adaptor eq 'MirrorTL_BR' or
-	    $adaptor eq 'MirrorTR_BL';
+	unless $adaptor->willReverseGlobalDirection;
 
     $line =~ s{$LTR_IN_URL_RE}{~TMP~}g;
     $line =~ s{$RTL_IN_URL_RE}{ltr}g;
@@ -450,26 +345,11 @@ sub fixLtrAndRtlInUrl {
     return $line;
 }
 
-my $CURSOR_DIRECTION_RE =
-    qr<$LOOKBEHIND_NOT_LETTER(nesw|nwse|[ns][we]|[nswe])-resize>;
-
 sub fixCursorDirection {
     my $adaptor   = shift;
     my $direction = shift;
 
-    if ($adaptor eq 'MirrorH' or $adaptor eq 'MirrorV') {
-	$direction =~ tr/ew/we/;
-    } elsif ($adaptor eq 'MirrorTL_BR') {
-	$direction =~ tr/nesw/wsen/;
-    } elsif ($adaptor eq 'MirrorTR_BL') {
-	$direction =~ tr/nesw/enws/;
-    } elsif ($adaptor eq 'RotateR') {
-	$direction =~ tr/nesw/eswn/;
-    } elsif ($adaptor eq 'RotateL') {
-	$direction =~ tr/nesw/wnes/;
-    } else {
-	croak "This can't happen!";
-    }
+    $direction = $adaptor->fixCursorPositions($direction);
     $direction =~ s/^([ew])([ns])/$2$1/;
     $direction =~ s/([ew])([ns])$/$2$1/;
     $direction =~ s/^(s[ew])(n[ew])$/$2$1/;
@@ -522,24 +402,12 @@ sub fixFourPartNotation {
     my $line    = shift;
     my $adaptor = $self->{'adaptor'};
 
-    if ($adaptor eq 'MirrorH' or $adaptor eq 'MirrorV') {
-	$line =~ s{$FOUR_NOTATION_QUANTITY_RE}{$1 $4 $3 $2}g;
-	$line =~ s{$FOUR_NOTATION_COLOR_RE}{$1$2 $5 $4 $3}g;
-    } elsif ($adaptor eq 'MirrorTL_BR') {
-	$line =~ s{$FOUR_NOTATION_QUANTITY_RE}{$4 $3 $2 $1}g;
-	$line =~ s{$FOUR_NOTATION_COLOR_RE}{$1$5 $4 $3 $2}g;
-    } elsif ($adaptor eq 'MirrorTR_BL') {
-	$line =~ s{$FOUR_NOTATION_QUANTITY_RE}{$2 $1 $4 $3}g;
-	$line =~ s{$FOUR_NOTATION_COLOR_RE}{$1$3 $2 $5 $4}g;
-    } elsif ($adaptor eq 'RotateR') {
-	$line =~ s{$FOUR_NOTATION_QUANTITY_RE}{$4 $1 $2 $3}g;
-	$line =~ s{$FOUR_NOTATION_COLOR_RE}{$1$5 $2 $3 $4}g;
-    } elsif ($adaptor eq 'RotateL') {
-	$line =~ s{$FOUR_NOTATION_QUANTITY_RE}{$2 $3 $4 $1}g;
-	$line =~ s{$FOUR_NOTATION_COLOR_RE}{$1$3 $4 $5 $2}g;
-    } else {
-	croak "This can't happen!";
-    }
+    $line =~ s{$FOUR_NOTATION_QUANTITY_RE}{
+	join(' ', $adaptor->reorderFourPartNotation($1, $2, $3, $4))
+    }eg;
+    $line =~ s{$FOUR_NOTATION_COLOR_RE}{
+	$1 . join(' ', $adaptor->reorderFourPartNotation($2, $3, $4, $5))
+    }eg;
 
     return $line;
 }
@@ -557,8 +425,7 @@ sub fixBackgroundPosition {
 
     my $adaptor = $self->{'adaptor'} || return $line;
     return $line
-	if $adaptor eq 'MirrorTL_BR' or
-	    $adaptor eq 'MirrorTR_BL';
+	unless $adaptor->willReverseGlobalDirection;
 
     $line =~ s{$BG_HORIZONTAL_PERCENTAGE_RE}{
 	calculateNewBackgroundPosition($&, $1, $2, $3, $4, $5)
@@ -602,19 +469,7 @@ sub reorderBorderRadiusPart {
 	$part[3] = $part[1];
     }
 
-    if ($adaptor eq 'MirrorH' or $adaptor eq 'MirrorV') {
-	@part = @part[1, 0, 3, 2];
-    } elsif ($adaptor eq 'MirrorTL_BR') {
-	@part = @part[0, 3, 2, 1];
-    } elsif ($adaptor eq 'MirrorTR_BL') {
-	@part = @part[2, 1, 0, 3];
-    } elsif ($adaptor eq 'RotateR') {
-	@part = @part[3, 0, 1, 2];
-    } elsif ($adaptor eq 'RotateL') {
-	@part = @part[1, 2, 3, 0];
-    } else {
-	croak "This can't happen!";
-    }
+    @part = $adaptor->reorderBorderRadiusSubparts(@part);
 
     if ($part[3] eq $part[1]) {
 	pop @part;
@@ -638,12 +493,12 @@ sub reorderBorderRadius {
     my $second_group = reorderBorderRadiusPart($adaptor, @m[7 .. $#m]);
     if ($second_group eq '') {
 	return sprintf '%sborder-radius%s%s', $_[1], $_[2], $first_group;
-    } elsif ($adaptor eq 'MirrorH' or $adaptor eq 'MirrorV') {
-	return sprintf '%sborder-radius%s%s / %s', $_[1], $_[2],
-	    $first_group, $second_group;
-    } else {
+    } elsif ($adaptor->willSwapHorizontalVertical) {
 	return sprintf '%sborder-radius%s%s / %s', $_[1], $_[2],
 	    $second_group, $first_group;
+    } else {
+	return sprintf '%sborder-radius%s%s / %s', $_[1], $_[2],
+	    $first_group, $second_group;
     }
 }
 
@@ -884,17 +739,17 @@ sub transform {
     # Tokenize line-relative properties if any, because
     # direction of line-relative properties should not be modified
     # except true ltr-rtl swapping.
-    unless ($self->{'adaptor'} eq 'MirrorH') {
+    unless ($self->{'adaptor'}->willReverseLineRelativeDirection) {
 	$line =~ s{$LINE_RELATIVE_DIRECTION_RE}{
 	    push @originals, $1;
 	    '~LINE_RELATIVE_' . (scalar @originals) . '~'
 	}eg;
     }
 
-    # Tokenize properties including "right"/"left" proposed to be dropped
-    $line =~ s{$DROPPED_DIRECTION_RE}{
+    # Tokenize properties including "right"/"left" not to be changed.
+    $line =~ s{$PROHIBITED_DIRECTION_RE}{
 	push @originals, $1;
-	'~DROPPED_DIRECTION_' . (scalar @originals) . '~'
+	'~PROHIBITED_DIRECTION_' . (scalar @originals) . '~'
     }eg;
 
     # Here start the various direction fixes.
@@ -937,8 +792,8 @@ sub transform {
 
     $line = $self->fixBackgroundPosition($line);
 
-    # DeTokenize properties including "right"/"left" proposed to be dropped
-    $line =~ s{~DROPPED_DIRECTION_(\d+)~}{$originals[$1 - 1]}eg;
+    # DeTokenize properties including "right"/"left" not to be fixed
+    $line =~ s{~PROHIBITED_DIRECTION_(\d+)~}{$originals[$1 - 1]}eg;
 
     # DeTokenize line-relative properties, if any
     $line =~ s{~LINE_RELATIVE_(\d+)~}{$originals[$1 - 1]}eg;
@@ -977,6 +832,91 @@ sub writing_mode {
     shift->{'writing_mode'} || undef;
 }
 
+=head2 Adaptors
+
+This module supports four directions of documents:
+
+=over 4
+
+=item lr-tb
+
+The direction specified by
+C<{ direction: ltr; writing-mode: horizontal-tb; }>.
+For example, most Western writing systems employ it.
+
+=item rl-tb
+
+The direction specified by
+C<{ direction: rtl; writing-mode: horizontal-tb; }>.
+For example, some Middle Eastern writing systems employ it.
+
+=item tb-lr
+
+The direction specified by
+C<{ writing-mode: vertical-lr; }>.
+For example, several North Asian writing systems employ it.
+
+=item lr-tb
+
+The direction specified by
+C<{ writing-mode: vertical-rl; }>.
+East Asian writing systems with vertical layout employ it.
+
+=back
+
+This module chooses adaptors by source & resulting directions:
+
+  table 1. Choosing adaptors
+  +-----------+-------------+-------------+-------------+--------------+
+  | from \ to | lr-tb       : rl-tb       : tb-lr       : tb-rl        |
+  +-----------+-------------+-------------+-------------+--------------+
+  | lr-tb     |      -      : MirrorH     : MirrorTL_BR : RotateR      |
+  | rl-tb     | MirrorH     :      -      : RotateL*    : MirrorTR_BL* |
+  | tb-lr     | MirrorTL_BR : RotateR     :      -      : MirrorV      |
+  | tb-rl     | RotateL     : MirrorTR_BL : MirrorV     :       -      |
+  +-----------+-------------+-------------+-------------+--------------+
+   * Assumed text-orientation: sideways-left.
+  
+   n.b.: Prefixing "CSS::Yamaantaka::" are omitted.
+
+Each adaptor will or won't change following "directions" of CSS properties.
+
+=over 4
+
+=item line-relative box directions
+
+"right" / "left" of text-align, float and clear.
+"top" / "bottom" of vertical-align.
+
+=item  physical box directions
+
+"top" / "right" / "bottom" / "left".
+
+=item global directions
+
+Directions specified by body element, "ltr" / "rtl".
+
+=item direction swapping
+
+Horizontal and vertical orientation.
+
+=back
+
+  table 2. Feature of adaptors
+  +-------------+-----------+-------------------------+---------+------+
+  |             | line-rel. | box directions          : global  : h/v  |
+  +-------------+-----------+-------------------------+---------+------+
+  | MirrorH     | reverse h.: reverse horizontally    : reverse :   -  |
+  | MirrorV     |     -     : reverse horizontally    : reverse :   -  |
+  | RotateR     |     -     : rotate clockwise        : reverse : swap |
+  | RotateL     |     -     : rotate counter-clockwise: reverse : swap |
+  | MirrorTL_BR |     -     : reverse with tl-br axis :    -    : swap |
+  | MirrorTR_BL |     -     : reverse with tr-bl axis :    -    : swap |
+  +-------------+-----------+-------------------------+---------+------+
+
+Any adaptors listed above won't fix line-relative text directions
+("rtl" / "ltr").
+
 =head1 VERSION
 
 Consult C<$VERSION> variable.
@@ -987,6 +927,8 @@ L<CSS::Janus>
 
 Extended CSSJanus supporting vertical-rl writing-mode:
 L<http://www.epubcafe.jp/download>
+
+L<cssflip>
 
 =head1 AUTHOR
 

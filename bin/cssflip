@@ -6,41 +6,65 @@ use Carp qw(croak);
 use Getopt::Long;
 use CSS::Janus;
 
+my $debug;
+my $src;
+my $dest;
 my $swap_ltr_rtl_in_url;
-my $swap_left_right_in_url;
+my $flip_cursor;
+my $flip_url;
 my $ignore_bad_bgp;
 
 use vars qw($VERSION);
-$VERSION = '0.03';
+$VERSION = '0.04_02';
 
 unless (
     GetOptions 'h|help' => sub {
-	open PIPE, '|pod2text' or exit $!;
-	print PIPE join '', <DATA>;
-	close PIPE;
+	help();
 	exit;
     },
     'version' => sub {
 	print "cssflip $VERSION\n";
 	exit;
     },
-
-    #'d|debug' => sub { croak 'Not yet implemented' },
+    'debug'                  => \$debug,
+    's|src|source=s'         => \$src,
+    'd|dest|destination=s'   => \$dest,
     'swap_ltr_rtl_in_url'    => \$swap_ltr_rtl_in_url,
-    'swap_left_right_in_url' => \$swap_left_right_in_url,
+    'swap_left_right_in_url' => \$flip_url,
     'ignore_bad_bgp'         => \$ignore_bad_bgp,
+    'flip_url'               => \$flip_url,
+    'flip_cursor!'           => \$flip_cursor,
     ) {
-    open PIPE, '|pod2text' or croak $!;
-    print PIPE join '', <DATA>;
-    close PIPE;
+    help();
     exit 2;
 }
 
-print CSS::Janus->new(
-    'swap_ltr_rtl_in_url'    => $swap_ltr_rtl_in_url,
-    'swap_left_right_in_url' => $swap_left_right_in_url,
-    'ignore_bad_bgp'         => $ignore_bad_bgp,
-)->transform(join '', <>);
+unless ($src or $dest) {
+    print CSS::Janus->new(
+	'debug'                  => $debug,
+	'swap_ltr_rtl_in_url'    => $swap_ltr_rtl_in_url,
+	'swap_left_right_in_url' => $flip_url,
+	'ignore_bad_bgp'         => $ignore_bad_bgp,
+    )->transform(join '', <>);
+} elsif ($src and $dest) {
+    print CSS::Yamaantaka->new(
+        'debug'               => $debug,
+	$src                  => $dest,
+	'swap_ltr_rtl_in_url' => $swap_ltr_rtl_in_url,
+	'flip_url'            => $flip_url,
+	'ignore_bad_bgp'      => $ignore_bad_bgp,
+	'flip_cursor'         => $flip_cursor,
+    )->transform(join '', <>);
+} else {
+    help();
+    exit 1;
+}
+
+sub help {
+    open PIPE, '|pod2text' or exit $!;
+    print PIPE join '', <DATA>;
+    close PIPE;
+}
 
 __END__
 
@@ -58,9 +82,19 @@ cssflip - Flip direction of Cascading Style Sheet (CSS)
 
 =over 4
 
-=item --swap_left_right_in_url
+=item --src=SRC --dest=DEST
+
+Original and resulting directions.
+Available directions are
+C<'lr_tb'>, C<'rl_tb'>, C<'tb_lr'> and C<'tb_rl'>.
+Their synonyms are C<'ltr'>, C<'rtl'>, C<'vertical-lr'> and C<'vertical-rl'>,
+
+If directions are not specified, swaps between ltr and rtl.
+
+=item --flip_url
 
 Fixes "left"/"right" string within URLs.
+Synonym is --swap_left_right_in_url.
 
 =item --swap_ltr_rtl_in_url
 
@@ -69,6 +103,10 @@ Fixes "ltr"/"rtl" string within URLs.
 =item --ignore_bad_bgp
 
 Ignores unmirrorable background-position values.
+
+=item --noflip_cursor
+
+Doesn't fix positions "n"/"e"/"s"/"w" and so on within cursor properties.
 
 =back
 
