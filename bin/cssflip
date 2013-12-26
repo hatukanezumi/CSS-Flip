@@ -3,8 +3,9 @@
 use strict;
 #use warnings;
 use Carp qw(croak);
-use Getopt::Long;
 use CSS::Janus;
+use Getopt::Long;
+use Pod::Usage;
 
 my $debug;
 my $src;
@@ -19,8 +20,7 @@ $VERSION = '0.04_02';
 
 unless (
     GetOptions 'h|help' => sub {
-	help();
-	exit;
+	pod2usage(-verbose => 2, -exitval => 0);
     },
     'version' => sub {
 	print "cssflip $VERSION\n";
@@ -35,8 +35,7 @@ unless (
     'flip_url'               => \$flip_url,
     'flip_cursor!'           => \$flip_cursor,
     ) {
-    help();
-    exit 2;
+    pod2usage(-verbose => 1, -output => \*STDERR, -exitval => 1);
 }
 
 unless ($src or $dest) {
@@ -56,14 +55,7 @@ unless ($src or $dest) {
 	'flip_cursor'         => $flip_cursor,
     )->transform(join '', <>);
 } else {
-    help();
-    exit 1;
-}
-
-sub help {
-    open PIPE, '|pod2text' or exit $!;
-    print PIPE join '', <DATA>;
-    close PIPE;
+    pod2usage(-verbose => 1, -output => \*STDERR, -exitval => 1);
 }
 
 __END__

@@ -9,7 +9,7 @@ BEGIN { plan tests => 66; }
 
 my %opts = (
     'swap_ltr_rtl_in_url'    => 1,
-    'swap_left_right_in_url' => 1
+    'flip_url' => 1,
 );
 
 do5tests(

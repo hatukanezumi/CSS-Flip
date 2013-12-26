@@ -6,7 +6,7 @@ use Test::More tests => 15;
 
 use CSS::Janus;
 
-my $self = CSS::Janus->new;
+my $self = CSS::Janus->new('ignore_bad_bgp' => 0);
 my $testcase;
 my $shouldbe;
 

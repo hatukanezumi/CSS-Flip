@@ -1,4 +1,13 @@
-0.04_02  Xxx Mar XX 2013
+0.04_03  Thu Dec 26 2013
+! bin/cssflip
+  - Use pod2usage.
+! lib/CSS/Janus.pm
+! lib/CSS/Yamaantaka.pm
+  - Moved repository to github.
++ t/17bisBGPositionHV.t
+  - background position cases including H/V conversion
+
+0.04_02  (Not really released)
 ! bin/cssflip
 ! lib/CSS/Janus.pm
 ! lib/CSS/Yamaantaka.pm

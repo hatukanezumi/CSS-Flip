@@ -7,10 +7,11 @@ under the same terms as Perl itself.
 
                                    ***
 
-One main module is contained.  For more details read following POD
-documentation:
+Two main modules and several submodules are contained.  For more details
+read following POD documentation:
 
     CSS::Janus - Converts a left-to-right Cascading Style Sheet (CSS) into a right-to-left one
+    CSS::Yamaantaka - Converts direction of Cascading Style Sheet (CSS)
 
 For more details about the utility program cssflip, run:
 

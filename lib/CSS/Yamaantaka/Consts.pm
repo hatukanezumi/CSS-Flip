@@ -33,6 +33,7 @@ BEGIN {
 	$BOX_DIRECTIONS_RE $BOX_DIRECTION_IN_URL_RE
 	$LINE_RELATIVE_DIRECTION_RE $PROHIBITED_DIRECTION_RE
 	$CURSOR_DIRECTION_RE
+	$BG_QUANTITY_RE $BG_QUANTITY_XY_RE
     );
 }
 use vars qw(@ISA @EXPORT $VERSION), @OUR_VARS;
@@ -132,8 +133,10 @@ my $BG_TERM = "(?:$URI|$STRING|$COLOR_SCHEME\\([^\)]+\\)|[^\\s;\}]+)";
 #$BG_HORIZONTAL_PERCENTAGE_RE =
 #    qr<background(-position)?(\s*:\s*)([^%]*?)($NUM)%(\s*(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
 # modified: fixed cssjanus Issue #20.
+# Not used: use $BG_QUANTITY_RE.
 $BG_HORIZONTAL_PERCENTAGE_RE =
     qr<background(-position)?(\s*:\s*)((?:$BG_TERM\s+)*?)($NUM)%(\s*(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
+# Not used: use $BG_QUANTITY_XY_RE.
 $BG_HORIZONTAL_PERCENTAGE_X_RE = qr<background-position-x(\s*:\s*)($NUM)%>;
 
 $LENGTH_UNIT           = '(?:em|ex|px|cm|mm|in|pt|pc)';
@@ -144,8 +147,10 @@ $ZERO_LENGTH = "(?:-?0+(?:\\s*$LENGTH_UNIT)|0+$LOOKAHEAD_END_OF_ZERO)\$";
 # $BG_HORIZONTAL_LENGTH_RE =
 #    qr<background(-position)?(\s*:\s*)((?:.+?\s+)??)($LENGTH)((?:\s+)(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
 # modified: fixed cssjanus Issue #20.
+# Not used: use $BG_QUANTITY_RE.
 $BG_HORIZONTAL_LENGTH_RE =
     qr<background(-position)?(\s*:\s*)((?:$BG_TERM\s+)*?)($LENGTH)((?:\s+)(?:$POSSIBLY_NEGATIVE_QUANTITY|top|center|bottom))>;
+# Not used: use $BG_QUANTITY_XY_RE.
 $BG_HORIZONTAL_LENGTH_X_RE = qr<background-position-x(\s*:\s*)($LENGTH)>;
 
 $CHARS_WITHIN_SELECTOR = '[^\}]*?';
@@ -184,7 +189,7 @@ $SINGLE_BORDER_RADIUS_TOKENIZER_RE =
     qr<((?:$IDENT)?border-(?:(top|bottom)-(left|right)-radius|radius-(top|bottom)(left|right))\s*:[^;}]+;?)>i;
 # box directions.
 $BOX_DIRECTIONS_RE =
-    qr<$LOOKBEHIND_NOT_LETTER(?:(top|bottom|center)(\s+|-)(left|right|center)|(top|right|bottom|left))$LOOKAHEAD_NOT_CLOSING_PAREN$LOOKAHEAD_NOT_OPEN_BRACE>i;
+    qr<$LOOKBEHIND_NOT_LETTER(?:(top|right|bottom|left|center)(\s+|-)(top|right|bottom|left|center)|(top|right|bottom|left))$LOOKAHEAD_NOT_CLOSING_PAREN$LOOKAHEAD_NOT_OPEN_BRACE>i;
 # box directions in URL.
 $BOX_DIRECTION_IN_URL_RE =
     qr<$LOOKBEHIND_NOT_LETTER(top|right|bottom|left)$LOOKAHEAD_FOR_CLOSING_PAREN>i;
@@ -197,5 +202,9 @@ $PROHIBITED_DIRECTION_RE =
 # cursor positions.
 $CURSOR_DIRECTION_RE =
     qr<$LOOKBEHIND_NOT_LETTER(nesw|nwse|[ns][we]|[nswe])-resize>;
+# background position
+$BG_QUANTITY_RE =
+    qr<background((?:-position)?)(\s*:\s*)((?:$BG_TERM\s+)*?)$POSSIBLY_NEGATIVE_QUANTITY(\s*)$POSSIBLY_NEGATIVE_QUANTITY>;
+$BG_QUANTITY_XY_RE = qr<background-position(-[xy])(\s*:\s*)$POSSIBLY_NEGATIVE_QUANTITY>;
 
 1;

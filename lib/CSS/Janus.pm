@@ -13,6 +13,13 @@ $VERSION = '0.04_02';
 
 sub new {
     my $pkg = shift;
+    my %opts = @_;
+
+    $opts{'flip_url'} = $opts{'swap_left_right_in_url'}
+	if defined $opts{'swap_left_right_in_url'};
+    $opts{'ignore_bad_bgp'} = 0
+	unless defined $opts{'ignore_bad_bgp'};
+
     my $self = $pkg->SUPER::new(@_, 'adaptor' => 'CSS::Yamaantaka::MirrorH');
     bless $self => $pkg;
 }
@@ -54,20 +61,21 @@ Following options are available.
 
 =over 4
 
-=item swap_left_right_in_url =E<gt> 0|1
+=item flip_url =E<gt> 0|1
 
 Fixes "left"/"right" string within URLs.
 Default is C<0>, won't fix.
+A synonym is C<swap_left_right_in_url>.
+
+=item ignore_bad_bgp =E<gt> 0|1
+
+Ignores unmirrorable background-position values.
+Default is C<0>, won't ignore and WILL croak it.
 
 =item swap_ltr_rtl_in_url =E<gt> 0|1
 
 Fixes "ltr"/"rtl" string within URLs.
 Default is C<0>, won't fix.
-
-=item ignore_bad_bgp =E<gt> 0|1
-
-Ignores unmirrorable background-position values.
-Default is C<0>, won't ignore and will croak it.
 
 =back
 
@@ -112,7 +120,7 @@ A PHP port of CSSJanus, L<http://www.mediawiki.org/wiki/Manual:CSSJanus.php>
 
 L<CSS::Yamaantaka>
 
-L<cssflip>
+L<cssflip(1)>
 
 =head1 AUTHOR
 

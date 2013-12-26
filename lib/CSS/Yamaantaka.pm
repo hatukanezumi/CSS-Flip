@@ -58,42 +58,47 @@ Following options are available.
 
 =over 4
 
-=item flip_url =E<gt> 0|1
+=item flip_bg =E<gt> 0|1
 
-Fixes "top"/"right"/"bottom"/"left" string within URLs.
-Default is C<0>, won't fix.
-
-=item swap_ltr_rtl_in_url =E<gt> 0|1
-
-Fixes "ltr"/"rtl" string within URLs, if needed.
-Default is C<0>, won't fix.
-
-=item ignore_bad_bgp =E<gt> 0|1
-
-Ignores unmirrorable background-position values.
-Default is C<0>, won't ignore and will croak it.
+Fixes background positions properties.
+Default is C<1>, will fix.
 
 =item flip_cursor =E<gt> 0|1
 
 Fixes positions "n"/"e"/"s"/"w" and so on within cursor properties.
 Default is C<1>, will fix.
 
+=item flip_url =E<gt> 0|1
+
+Fixes "top"/"right"/"bottom"/"left" string within URLs.
+Default is C<0>, won't fix.
+
+=item ignore_bad_bgp =E<gt> 0|1
+
+Ignores unmirrorable background-position values.
+Default is C<1>, WILL ignore and won't croak it.
+
+=item swap_ltr_rtl_in_url =E<gt> 0|1
+
+Fixes "ltr"/"rtl" string within URLs, if needed.
+Default is C<0>, won't fix.
+
 =back
 
 In second form, ADAPTOR is a name of package or an object.
 package will be automatically loaded.
 See L</Adaptors> about standard adaptors.
-See sources to find out how to implement your own adaptor.
 
 =back
 
 =cut
 
 my %defaults = (
-    'flip_url'            => 0,
-    'swap_ltr_rtl_in_url' => 0,
-    'ignore_bad_bgp'      => 0,
+    'flip_bg'             => 1,
     'flip_cursor'         => 1,
+    'flip_url'            => 0,
+    'ignore_bad_bgp'      => 1,
+    'swap_ltr_rtl_in_url' => 0,
 );
 
 my %dir_synonym = (
@@ -162,11 +167,6 @@ sub new {
     if ($self->{'adaptor'} and !ref $self->{'adaptor'}) {
 	eval "use $self->{'adaptor'}";
 	croak $@ if $@;
-    }
-
-    # compat.
-    if (defined $self->{'swap_left_right_in_url'}) {
-	$self->{'flip_url'} = $self->{'swap_left_right_in_url'};
     }
 
     # apply default
@@ -424,18 +424,20 @@ sub fixBackgroundPosition {
     my $line = shift;
 
     my $adaptor = $self->{'adaptor'} || return $line;
-    return $line
-	unless $adaptor->willReverseGlobalDirection;
+#    return $line
+#	unless $adaptor->willReverseGlobalDirection;
 
-    $line =~ s{$BG_HORIZONTAL_PERCENTAGE_RE}{
-	calculateNewBackgroundPosition($&, $1, $2, $3, $4, $5)
+    $line =~ s{$BG_QUANTITY_RE}{
+	$self->calculateNewBackgroundQuantityPosition(
+	    $&, $1, $2, $3, $4, $5, $6
+	)
     }eg;
     $line =~ s{$BG_HORIZONTAL_PERCENTAGE_X_RE}{
-	calculateNewBackgroundPositionX($&, $1, $2)
+	$self->calculateNewBackgroundPositionX($&, $1, $2)
     }eg;
-    $line =~ s{$BG_HORIZONTAL_LENGTH_RE}{
-	$self->calculateNewBackgroundLengthPosition($&, $1, $2, $3, $4, $5)
-    }eg;
+#    $line =~ s{$BG_HORIZONTAL_LENGTH_RE}{
+#	$self->calculateNewBackgroundLengthPosition($&, $1, $2, $3, $4, $5)
+#    }eg;
     $line =~ s{$BG_HORIZONTAL_LENGTH_X_RE}{
 	$self->calculateNewBackgroundLengthPositionX($&, $1, $2)
     }eg;
@@ -502,29 +504,30 @@ sub reorderBorderRadius {
     }
 }
 
-# calculateNewBackgroundPosition ($&, $1, $2, $3, $4, $5)
+## calculateNewBackgroundPosition ($&, $1, $2, $3, $4, $5)
+##
+## Changes horizontal background-position percentages, e.g.:
+## 'background-position: 75% 50%' => 'background-position: 25% 50%'
 #
-# Changes horizontal background-position percentages, e.g.:
-# 'background-position: 75% 50%' => 'background-position: 25% 50%'
-
-sub calculateNewBackgroundPosition {
-    my @m = @_;
-    my $new_x;
-    my $position_string;
-
-    # The flipped value is the offset from 100%
-    $new_x = 100 - int($m[4]);
-
-    # Since m.group(1) may very well be None type and we need a string..
-    if ($m[1]) {
-	$position_string = $m[1];
-    } else {
-	$position_string = '';
-    }
-
-    return sprintf 'background%s%s%s%s%%%s',
-	$position_string, $m[2], $m[3], $new_x, $m[5];
-}
+#sub calculateNewBackgroundPosition {
+#    my $self = shift;
+#    my @m = @_;
+#    my $new_x;
+#    my $position_string;
+#
+#    # The flipped value is the offset from 100%
+#    $new_x = 100 - int($m[4]);
+#
+#    # Since m.group(1) may very well be None type and we need a string..
+#    if ($m[1]) {
+#	$position_string = $m[1];
+#    } else {
+#	$position_string = '';
+#    }
+#
+#    return sprintf 'background%s%s%s%s%%%s',
+#	$position_string, $m[2], $m[3], $new_x, $m[5];
+#}
 
 # calculateNewBackgroundPositionX ($&, $1, $2)
 #
@@ -532,6 +535,7 @@ sub calculateNewBackgroundPosition {
 # 'background-position-x: 75%' => 'background-position-x: 25%'
 
 sub calculateNewBackgroundPositionX {
+    my $self = shift;
     my @m = @_;
     my $new_x;
 
@@ -542,7 +546,7 @@ sub calculateNewBackgroundPositionX {
 }
 
 my $BACKGROUND_POSITION_ERROR_MESSAGE =
-    "Unmirrorable horizonal value \"%s\": %s\n";
+    "Unmirrorable position value \"%s\": %s\n";
 
 sub warnForBackgroundPosition {
     my $self        = shift;
@@ -559,34 +563,34 @@ sub warnForBackgroundPosition {
     }
 }
 
-# calculateNewBackgroundLengthPosition ($&, $1, $2, $3, $4, $5)
+## calculateNewBackgroundLengthPosition ($&, $1, $2, $3, $4, $5)
+##
+## Changes horizontal background-position lengths, e.g.:
+## 'background-position: 0px 10px' => 'background-position: 100% 10px'
+##
+## If value is not replaceable, croak it (by default) or carp it (if
+## 'ignore_bad_bgp' option is set).
 #
-# Changes horizontal background-position lengths, e.g.:
-# 'background-position: 0px 10px' => 'background-position: 100% 10px'
+#sub calculateNewBackgroundLengthPosition {
+#    my $self = shift;
+#    my @m    = @_;
+#    my $position_string;
 #
-# If value is not replaceable, croak it (by default) or carp it (if
-# 'ignore_bad_bgp' option is set).
-
-sub calculateNewBackgroundLengthPosition {
-    my $self = shift;
-    my @m    = @_;
-    my $position_string;
-
-    # croak if the length is not zero-valued
-    unless ($m[4] =~ m{^$ZERO_LENGTH}) {
-	$self->warnForBackgroundPosition($m[4], $m[0]);
-	return $m[0];
-    }
-
-    if (defined $m[1] and length $m[1]) {
-	$position_string = $m[1];
-    } else {
-	$position_string = '';
-    }
-
-    return sprintf 'background%s%s%s100%%%s',
-	$position_string, $m[2], $m[3], $m[5];
-}
+#    # croak if the length is not zero-valued
+#    unless ($m[4] =~ m{^$ZERO_LENGTH}) {
+#	$self->warnForBackgroundPosition($m[4], $m[0]);
+#	return $m[0];
+#    }
+#
+#    if (defined $m[1] and length $m[1]) {
+#	$position_string = $m[1];
+#    } else {
+#	$position_string = '';
+#    }
+#
+#    return sprintf 'background%s%s%s100%%%s',
+#	$position_string, $m[2], $m[3], $m[5];
+#}
 
 # calculateNewBackgroundLengthPositionX ($&, $1, $2)
 #
@@ -607,6 +611,45 @@ sub calculateNewBackgroundLengthPositionX {
     }
 
     return sprintf 'background-position-x%s100%%', $m[1];
+}
+
+# calculateNewBackgroundQuantityPosition ($&, $1, $2, $3, $4, $5, $6)
+#
+# Changes background-position percentages, e.g.:
+# 'background-position: 75% 50%' => 'background-position: 25% 50%'
+
+sub calculateNewBackgroundQuantityPosition {
+    my $self = shift;
+    my @m = @_;
+    my $adaptor = $self->{'adaptor'};
+    my $position_string;
+
+    my @pos = ($m[6], undef, undef, $m[4]);
+    # The flipped value is the offset from 100%
+    if ($pos[3] =~ m{^($NUM)\%$}) {
+	$pos[1] = (100 - int($1)) . '%';
+    } elsif ($pos[3] =~ m{^$ZERO_LENGTH}) {
+	$pos[1] = '100%';
+    } elsif ($pos[3] =~ m{auto|inherit}) {
+	$pos[1] = $pos[3];
+    }
+    if ($pos[0] =~ m{^($NUM)\%$}) {
+	$pos[2] = (100 - int($1)) . '%';
+    } elsif ($pos[0] =~ m{^$ZERO_LENGTH}) {
+	$pos[2] = '100%';
+    } elsif ($pos[0] =~ m{auto|inherit}) {
+        $pos[2] = $pos[0];
+    }
+
+    @pos = $adaptor->reorderFourPartNotation(@pos);
+
+    unless (defined $pos[0] and defined $pos[3]) {
+	$self->warnForBackgroundPosition("$m[4]$m[5]$m[6]", $m[0]);
+	return $m[0];
+    }
+
+    return sprintf 'background%s%s%s%s%s%s',
+	$m[1], $m[2], $m[3], $pos[3], $m[5], $pos[0];
 }
 
 =head2 Methods
@@ -653,17 +696,15 @@ Following options are available.
 
 =over 4
 
-=item swap_ltr_rtl_in_url =E<gt> 0|1
-
-Overrides this flag if param is set.
-
-=item flip_url =E<gt> 0|1
-
-Overrides this flag if param is set.
+=item flip_bg =E<gt> 0|1
 
 =item flip_cursor =E<gt> 0|1
 
-Overrides this flag if param is set.
+=item flip_url =E<gt> 0|1
+
+=item swap_ltr_rtl_in_url =E<gt> 0|1
+
+Overrides these flags if params are set.
 
 =back
 
@@ -685,6 +726,7 @@ sub transform {
     my $swap_ltr_rtl_in_url = $opts{'swap_ltr_rtl_in_url'};
     my $flip_url            = $opts{'flip_url'};
     my $flip_cursor         = $opts{'flip_cursor'};
+    my $flip_bg             = $opts{'flip_bg'};
 
     # compat.
     if (defined $opts{'swap_left_right_in_url'}) {
@@ -699,6 +741,9 @@ sub transform {
     }
     unless (defined $flip_cursor) {
 	$flip_cursor = $self->{'flip_cursor'};
+    }
+    unless (defined $flip_bg) {
+        $flip_bg = $self->{'flip_bg'};
     }
 
     my @originals = ();
@@ -790,7 +835,9 @@ sub transform {
     $line = $self->fixFourPartNotation($line);
     $line =~ s{~BORDER_RADIUS_(\d+)~}{$originals[$1 - 1]}eg;
 
-    $line = $self->fixBackgroundPosition($line);
+    if ($flip_bg) {
+	$line = $self->fixBackgroundPosition($line);
+    }
 
     # DeTokenize properties including "right"/"left" not to be fixed
     $line =~ s{~PROHIBITED_DIRECTION_(\d+)~}{$originals[$1 - 1]}eg;
@@ -928,7 +975,7 @@ L<CSS::Janus>
 Extended CSSJanus supporting vertical-rl writing-mode:
 L<http://www.epubcafe.jp/download>
 
-L<cssflip>
+L<cssflip(1)>
 
 =head1 AUTHOR
 
